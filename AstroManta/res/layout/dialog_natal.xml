@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_weight="1"
+        android:padding="5dp"
+        android:scrollbarStyle="outsideOverlay" >
+
+        <TableLayout
+            android:id="@+id/edit_table"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible" >
+
+            <TableRow>
+                <TextView
+                    style="@style/EditLabel"
+                    android:text="@string/info"/>
+                <EditText
+                    android:id="@+id/edit_info"
+                    style="@style/EditItem"
+                    android:layout_span="2"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    style="@style/EditLabel"
+                    android:text="@string/date"/>
+
+                <EditText
+                    android:id="@+id/edit_date"
+                    style="@style/EditItem"
+                    android:inputType="date|text" />
+
+                <Button
+                    android:id="@+id/btn_now"
+                    style="@style/EditItem"
+                    android:text="@string/now"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    style="@style/EditLabel"
+                    android:text="@string/time"/>
+
+                <EditText
+                    android:id="@+id/edit_time"
+                    style="@style/EditItem"
+                    android:inputType="time|text" />
+
+                <EditText
+                    android:id="@+id/edit_time_zone"
+                    style="@style/EditItem"
+                    android:inputType="text" />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    style="@style/EditLabel"
+                    android:text="@string/zone"/>
+
+                <AutoCompleteTextView
+                    android:id="@+id/edit_zone"
+                    style="@style/EditItem"
+                    android:layout_span="2"
+                    android:inputType="text" />
+
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    style="@style/EditLabel"
+                    android:text="@string/place"/>
+                <AutoCompleteTextView
+                    android:id="@+id/edit_place"
+                    style="@style/EditItem"
+                    android:inputType="text" />
+                <Button
+                    android:id="@+id/btn_atlas"
+                    style="@style/EditItem"
+                    android:text="@string/atlas" />
+            </TableRow>
+
+            <TableRow android:id="@+id/row_coord">
+                <TextView
+                    style="@style/EditLabel"
+                    android:text="@string/coord"/>
+                <EditText
+                    android:id="@+id/edit_lat"
+                    style="@style/EditItem"
+                    android:inputType="text" />
+                <EditText
+                    android:id="@+id/edit_lon"
+                    style="@style/EditItem"
+                    android:inputType="text" />
+            </TableRow>
+
+            <TableRow android:id="@+id/row_houses">
+                <TextView
+                    style="@style/EditLabel"
+                    android:text="@string/houses"/>
+                <Spinner
+                    android:id="@+id/edit_houses"
+                    style="@style/EditItem"
+                    android:layout_span="2"
+                    android:entries="@array/house" />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    style="@style/EditLabel"
+                    android:text="@string/points"/>
+                <Button
+                    android:id="@+id/btn_points"
+                    style="@style/EditItem"
+                    android:layout_span="2"
+                    android:text="@string/edit" />
+            </TableRow>
+            
+        </TableLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#AAAAAA"
+        android:padding="5dp" >
+
+        <Button
+            android:id="@+id/btn_save"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/save"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/btn_load"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/load"
+            android:visibility="visible" />
+        
+        <Button
+            android:id="@+id/btn_ok"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@android:string/ok"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+</LinearLayout>

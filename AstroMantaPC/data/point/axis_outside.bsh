@@ -1,0 +1,96 @@
+import swisseph.SweConst;
+
+Sys.lib("point/oposite.bsh");
+Sys.i18n("point/axis.json");
+
+void PointAxisOutside(Chart chart, ViewChart view) {
+	// Asc
+
+	asc = chart.addAxis(SweConst.SE_ASC);
+
+	asc.setName("Asc");
+	asc.setCategory("Axis");
+
+	if (view != null) {
+		v = view.addInside(asc);
+
+	    v.getPaint().setColor(0x00B000, 128);
+	    v.getPaint().setStrokeWidth(3);
+	    
+	    l = view.addOutsideInfo(asc);
+
+	    l.setPaint(v.getPaint());
+	    l.getPaintText().setColor(0x00B000, 255);
+	    l.setTextSize(20);
+	    l.setSize(view.getSizeChart() / 2);
+	}
+
+	// Dsc
+
+	dsc = chart.addCalcSpot();
+	
+	dsc.setName("Dsc");
+	dsc.setCategory("Axis");
+	dsc.setBag(object());
+	dsc.getBag().no_info = true;
+	dsc.setCalcListener(CalcOposite, asc.getEcliptic());
+
+	if (view != null) {
+		v = view.addInside(dsc);
+
+		v.getPaint().setColor(0x00B000, 128);
+		v.getPaint().setStrokeWidth(2);
+
+	    l = view.addOutsideInfo(dsc);
+
+	    l.setPaint(v.getPaint());
+	    l.getPaintText().setColor(0x00B000, 255);
+	    l.setTextSize(20);
+	    l.setSize(view.getSizeChart() / 2);
+	}
+
+	// Mc
+
+	mc = chart.addAxis(SweConst.SE_MC);
+
+	mc.setName("Mc");
+	mc.setCategory("Axis");
+
+	if (view != null) {
+		v = view.addInside(mc);
+
+		v.getPaint().setColor(0xB00000, 128);
+		v.getPaint().setStrokeWidth(3);
+		
+	    l = view.addOutsideInfo(mc);
+
+	    l.setPaint(v.getPaint());
+	    l.getPaintText().setColor(0xB00000, 255);
+	    l.setTextSize(20);
+	    l.setSize(view.getSizeChart() / 2);
+	}
+	
+	// Ic
+
+	ic = chart.addCalcSpot();
+	
+	ic.setName("Ic");
+	ic.setCategory("Axis");
+	ic.setBag(object());
+	ic.getBag().no_info = true;
+	ic.setCalcListener(CalcOposite, mc.getEcliptic());
+
+	if (view != null) {
+		v = view.addInside(ic);
+
+		v.getPaint().setColor(0xB00000, 128);
+		v.getPaint().setStrokeWidth(2);
+		
+	    l = view.addOutsideInfo(ic);
+
+	    l.setPaint(v.getPaint());
+	    l.getPaintText().setColor(0xB00000, 255);
+	    l.setTextSize(20);
+	    l.setSize(view.getSizeChart() / 2);
+	}
+}

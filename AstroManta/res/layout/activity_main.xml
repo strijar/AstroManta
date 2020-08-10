@@ -1,0 +1,156 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    tools:context=".Sys" >
+        
+    <RelativeLayout
+        android:id="@+id/chartLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="#FFFFFF"
+        android:visibility="visible" >
+
+        <ru.strijar.astromanta.android.ViewCharts
+            android:id="@+id/chart"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:longClickable="true"
+            android:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/waitBar"
+            style="?android:attr/progressBarStyleInverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:minHeight="100dp"
+            android:minWidth="100dp"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <SlidingDrawer
+        android:id="@+id/slidingDrawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/toolbar_size"
+        android:background="#00000000"
+        android:content="@+id/content"
+        android:handle="@+id/handle"
+        android:orientation="horizontal" >
+
+      	<RelativeLayout
+      	    android:id="@+id/handle"
+      	    android:layout_width="wrap_content"
+      	    android:layout_height="wrap_content"
+      	    android:padding="3dp" >
+
+      	    <ImageButton
+      	        android:id="@+id/handle_image"
+      	        android:layout_width="@dimen/toolbar_size"
+      	        android:layout_height="fill_parent"
+      	        android:background="@drawable/handle_back"
+      	        android:contentDescription="Info"
+      	        android:padding="3dp"
+      	        android:scaleType="centerInside"
+      	        android:src="@android:drawable/ic_dialog_info" />
+
+      	</RelativeLayout>
+
+   		<RelativeLayout
+   		    android:id="@+id/content"
+   		    android:layout_width="fill_parent"
+   		    android:layout_height="fill_parent"
+   		    android:layerType="software"
+   		    android:paddingBottom="3dp"
+   		    android:paddingLeft="0dp"
+   		    android:paddingRight="3dp"
+   		    android:paddingTop="3dp" >
+      	
+       		<WebView
+       		    android:id="@+id/TextView"
+       		    android:layout_width="match_parent"
+       		    android:layout_height="match_parent"
+       		    android:background="@drawable/info_back"
+       		    android:layerType="software"
+       		    android:visibility="visible" />
+
+   		</RelativeLayout>
+    </SlidingDrawer>
+    
+    <RelativeLayout
+        android:id="@+id/top_padding"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/toolbar_size"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:background="@drawable/action_back"
+        android:paddingRight="5dp" >
+
+        <ImageButton
+            android:id="@+id/logo_image"
+            android:layout_width="@dimen/toolbar_size"
+            android:layout_height="@dimen/toolbar_size"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="3dp"
+            android:background="#00000000"
+            android:contentDescription="Logo"
+            android:scaleType="centerInside"
+            android:src="@drawable/astromanta" />
+        
+    	<LinearLayout
+    	    android:id="@+id/top_toolbar"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="fill_parent"
+    	    android:layout_centerVertical="true"
+    	    android:layout_toLeftOf="@+id/menu_image"
+    	    android:layout_toRightOf="@+id/logo_image"
+    	    android:background="#00000000"
+    	    android:orientation="horizontal"
+    	    android:visibility="visible" >
+
+    	</LinearLayout>
+
+    	<ImageButton
+    	    android:id="@+id/menu_image"
+    	    android:layout_width="@dimen/toolbar_size"
+    	    android:layout_height="@dimen/toolbar_size"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_alignParentTop="true"
+    	    android:layout_margin="3dp"
+    	    android:background="#00000000"
+    	    android:contentDescription="Logo"
+    	    android:scaleType="fitCenter"
+    	    android:src="@drawable/ic_menu_moreoverflow_normal_holo_light" />
+    	
+    </RelativeLayout>
+
+    <RelativeLayout
+      	    android:id="@+id/bottom_padding"
+      	    android:layout_width="wrap_content"
+      	    android:layout_height="wrap_content"
+      	    android:padding="3dp" >
+    	
+    	<LinearLayout
+        	android:id="@+id/bottom_toolbar"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_alignParentBottom="true"
+        	android:layout_alignParentLeft="true"
+        	android:background="@drawable/handle_back"
+        	android:orientation="horizontal"
+        	android:visibility="gone" >
+    	</LinearLayout>
+    </RelativeLayout>
+    
+</RelativeLayout>

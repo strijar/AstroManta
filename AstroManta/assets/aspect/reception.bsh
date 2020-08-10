@@ -1,0 +1,73 @@
+Sys.lib("init/division.bsh");
+
+i18n.add("ru", "Reception",		"Прием");
+i18n.add("ru", "Reception full",	"Рецепция");
+
+void AspectReception(view) {
+	aspects = view.getAspectTable();
+
+	// Day receptions
+
+	tag_rec = i18n.get("Reception");
+	tag_rec_full = i18n.get("Reception full");
+
+	recept = aspects.addReception();
+
+	recept.forward("--->").setTag(tag_rec);
+	recept.backward("<---").setTag(tag_rec);
+	recept.both("<--->").setTag(tag_rec_full);
+
+	recept.setDivision(Charts.getDivision("Ruling day"));
+
+	recept.excludeCategory("Axis");
+	recept.excludeCategory("House");
+	recept.excludeCategory("Fictitious");
+
+	recept.excludeName("Uranus");
+	recept.excludeName("Neptune");
+	recept.excludeName("Pluto");
+
+	recept.setTag("day");
+
+	// Night receptions
+
+	recept = aspects.addReception();
+
+	recept.forward("--->").setTag(tag_rec);
+	recept.backward("<---").setTag(tag_rec);
+	recept.both("<--->").setTag(tag_rec_full);
+
+	recept.setDivision(Charts.getDivision("Ruling night"));
+
+	recept.excludeCategory("Axis");
+	recept.excludeCategory("House");
+	recept.excludeCategory("Fictitious");
+
+	recept.excludeName("Uranus");
+	recept.excludeName("Neptune");
+	recept.excludeName("Pluto");
+
+	recept.setTag("night");
+
+	// View for all receptions
+
+	v = view.addAspectCurve("--->", 0.3f);
+
+	v.getPaint().setColor(0x00FF00, 32);
+	v.getPaint().setForwardStyle(5);
+
+	v = view.addAspectCurve("<---", 0.3f);
+
+	v.getPaint().setColor(0x00FF00, 32);
+	v.getPaint().setBackwardStyle(5);
+
+	v = view.addAspectCurve("<--->", 0.3f);
+
+	v.getPaint().setColor(0x00FF00, 64);
+	v.getPaint().setBidirectStyle(5);
+
+	// Register tags
+
+	Tags.Add("asp_recept", tag_rec, aspects);
+	Tags.Add("asp_recept_full", tag_rec_full, aspects);
+}

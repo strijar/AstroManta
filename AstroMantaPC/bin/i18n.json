@@ -1,0 +1,37 @@
+{
+	"ru" : {
+		"To get started select a workspace into <b>Menu</b>" : "Для начала работы выберите рабочий стол через <b>Меню</b>",
+
+		"Main"						: "Основное",
+		"Info"						: "Инфо",
+		"Date"						: "Дата",
+		"Now"						: "Сейчас",
+		"Time" 						: "Время",
+		"Timezone"					: "Зона",
+		"Place"						: "Место",
+		"Coord"						: "Координаты",
+		"Houses"					: "Дома",
+		"Atlas"						: "Атлас",
+		"Ok"						: "Да",
+
+		"Points"					: "Точки",
+		"Invisible"					: "Невидимая",
+		"Visible"					: "Видимая",
+		"Aspected only"				: "Только аспектируется",
+		"Aspecting only"			: "Только аспектирует",
+		"Aspected and aspecting"	: "Аспектируется и аспектирует",
+
+		"Charts"					: "Карты",
+		"Load chart" 				: "Загрузить карту",
+		"Save chart" 				: "Сохранить карту",
+		"Add category" 				: "Добавить категорию",
+		"Remove" 					: "Удалить",
+		"Rename" 					: "Переименовать",
+
+		"Lunar" 					: "Лунное",
+		"Solar" 					: "Солнечное",
+		"Find"						: "Поиск",
+		"Previous" 					: "Предыдущее",
+		"Next" 						: "Следующее",
+    }
+}

@@ -1,0 +1,49 @@
+void PointHouse(Chart chart, ViewChart view) {
+	void insert(id, name, color) {
+		Spot p = chart.addHouseCusp(id);
+
+		p.setName(name);
+		p.setCategory("House");
+
+		v = view.addInside(p);
+
+		v.getPaint().setColor(color, 128);
+	};
+	
+	insert(1,	"I", 	0x00B000);
+	insert(2,	"II", 	0x555555);
+	insert(3,	"III", 	0x555555);
+	insert(4,	"IV",	0xB00000);
+	insert(5,	"V",	0x555555);
+	insert(6,	"VI", 	0x555555);
+	insert(7,	"VII",	0x00B000);
+	insert(8,	"VIII", 0x555555);
+	insert(9,	"IX", 	0x555555);
+	insert(10,	"X", 	0xB00000);
+	insert(11,	"XI", 	0x555555);
+	insert(12,	"XII",	0x555555);
+};
+
+void PointHouseZone(Chart chart, ViewChart view) {
+	void insert(p1, p2, color) {
+		zone = view.addZone(chart.getSpot(p1), chart.getSpot(p2));
+	
+		zone.getPaint().setColor(color, 32);
+	};
+	
+	insert("I",		"II",	0xFF0000);
+	insert("II",	"III",	0x00FF00);
+	insert("III",	"IV",	0x0000FF);
+	
+	insert("IV",	"V",	0xFF0000);
+	insert("V",		"VI",	0x00FF00);
+	insert("VI",	"VII",	0x0000FF);
+	
+	insert("VII",	"VIII",	0xFF0000);
+	insert("VIII",	"IX",	0x00FF00);
+	insert("IX",	"X",	0x0000FF);
+	
+	insert("X",		"XI",	0xFF0000);
+	insert("XI",	"XII",	0x00FF00);
+	insert("XII",	"I",	0x0000FF);
+};

@@ -1,0 +1,13 @@
+Sys.lib("point/septener.bsh");
+Sys.lib("point/moon_node.bsh");
+Sys.lib("point/axis_outside.bsh");
+Sys.lib("point/house_outside.bsh");
+Sys.lib("point/pars_fortuna.bsh");
+
+void PointHorar(Chart chart, ViewChart view) {
+	PointSeptener(chart, view);
+	PointMoonNode(chart, view);
+	PointAxisOutside(chart, view);
+	PointParsFortuna(chart, view);
+	PointHouseOutside(chart, view);
+}

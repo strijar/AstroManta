@@ -1,0 +1,59 @@
+import swisseph.SweConst;
+
+Sys.lib("point/oposite.bsh");
+
+void PointAxis(Chart chart, ViewChart view) {
+	// Asc
+
+	asc = chart.addAxis(SweConst.SE_ASC);
+
+	asc.setName("Asc");
+	asc.setCategory("Axis");
+
+	v = view.addInside(asc, "pic/asc.png");
+
+	v.getPaint().setColor(0x00B000, 128);
+	v.getPaint().setStrokeWidth(3);
+
+	// Dsc
+
+	dsc = chart.addCalcSpot();
+	
+	dsc.setName("Dsc");
+	dsc.setCategory("Axis");
+	dsc.setBag(object());
+	dsc.getBag().no_info = true;
+	dsc.setCalcListener(CalcOposite, asc.getEcliptic());
+
+	v = view.addInside(dsc);
+
+	v.getPaint().setColor(0x00B000, 128);
+	v.getPaint().setStrokeWidth(2);
+
+	// Mc
+
+	mc = chart.addAxis(SweConst.SE_MC);
+
+	mc.setName("Mc");
+	mc.setCategory("Axis");
+
+	v = view.addInside(mc, "pic/mc.png");
+
+	v.getPaint().setColor(0xB00000, 128);
+	v.getPaint().setStrokeWidth(3);
+
+	// Ic
+
+	ic = chart.addCalcSpot();
+	
+	ic.setName("Ic");
+	ic.setCategory("Axis");
+	ic.setBag(object());
+	ic.getBag().no_info = true;
+	ic.setCalcListener(CalcOposite, mc.getEcliptic());
+
+	v = view.addInside(ic);
+
+	v.getPaint().setColor(0xB00000, 128);
+	v.getPaint().setStrokeWidth(2);
+}

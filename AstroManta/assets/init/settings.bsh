@@ -1,0 +1,110 @@
+i18n.add("ru", "Settings",					"Настройки");
+i18n.add("ru", "Zodiac direction CW/CCW",	"Направление Зодиака по/против");
+i18n.add("ru", "Zodiac simbols in info",	"Символы Зодиака в инфо");
+i18n.add("ru", "Default place",				"Текущее местоположение");
+i18n.add("ru", "Hide/Show",					"Скрыть/Показать");
+
+i18n.add("ru", "Screen",					"Экран");
+i18n.add("ru", "Scale up",					"Крупней");
+i18n.add("ru", "Scale down",				"Мельче");
+i18n.add("ru", "Screenshot",				"Снимок экрана");
+i18n.add("ru", "Screenshot saved",			"Снимок экрана сохранен");
+
+settingsClass() {
+	ITEM_DEFAULT_PLACE	= 1;
+	ITEM_ZODIAC_DIR		= 2;
+	ITEM_INFO_SIGN		= 3;
+	ITEM_TAGS			= 4;
+
+	ITEM_SCALE_UP		= 5;
+	ITEM_SCALE_DOWN		= 6;
+	ITEM_SCREENSHOT		= 7;
+
+	void onPrepareOptionsMenu(Menu menu) {
+		current = workspace.current;
+	
+		sub = menu.addSubMenu(i18n.get("Settings"));
+
+		sub.add(Menu.NONE, ITEM_DEFAULT_PLACE, Menu.NONE, i18n.get("Default place")).setOnMenuItemClickListener(this);
+
+		if (current != null) {
+			sub.add(Menu.NONE, ITEM_ZODIAC_DIR, Menu.NONE, i18n.get("Zodiac direction CW/CCW")).setOnMenuItemClickListener(this);
+			sub.add(Menu.NONE, ITEM_INFO_SIGN, Menu.NONE, i18n.get("Zodiac simbols in info")).setOnMenuItemClickListener(this);
+			sub.add(Menu.NONE, ITEM_TAGS, Menu.NONE, i18n.get("Hide/Show")).setOnMenuItemClickListener(this);
+	
+			current.onPrepareSettingsMenu(sub);
+		
+			sub = menu.addSubMenu(i18n.get("Screen"));
+
+			sub.add(Menu.NONE, ITEM_SCALE_UP, Menu.NONE, i18n.get("Scale up")).setOnMenuItemClickListener(this);
+			sub.add(Menu.NONE, ITEM_SCALE_DOWN, Menu.NONE, i18n.get("Scale down")).setOnMenuItemClickListener(this);
+			sub.add(Menu.NONE, ITEM_SCREENSHOT, Menu.NONE, i18n.get("Screenshot")).setOnMenuItemClickListener(this);
+		}
+	};
+
+	void onAtlas(name, lat, lon, zone) {
+		Sys.prefSet("place_name", name);
+		Sys.prefSet("place_lat", (float) lat);
+		Sys.prefSet("place_lon", (float) lon);
+		Sys.prefSet("place_zone",zone);
+	};
+
+	void onString(name) {
+		ViewCharts.screenshot(name);
+		Sys.toast(i18n.get("Screenshot saved"));
+	};
+
+	boolean onMenuItemClick(MenuItem item) {
+		current = workspace.current;
+	
+		switch (item.getItemId())  {
+			case ITEM_ZODIAC_DIR:
+				cw = !Sys.prefGet("cw", false);
+				current.ZodiacDir(cw);
+				Sys.prefSet("cw", cw);
+				break;
+
+			case ITEM_INFO_SIGN:
+				on = !Sys.prefGet("sign_pic", false);
+				current.InfoSigns(on);
+				Sys.prefSet("sign_pic", on);
+				break;
+
+			case ITEM_DEFAULT_PLACE:
+				Sys.atlas(this);
+				break;
+
+			case ITEM_TAGS:
+				Tags.Dialog();
+				break;
+
+			case ITEM_SCALE_UP:
+				s = Sys.prefGet("scale", 1.0f) + 0.25f;
+
+				if (s <= 2) {
+					current.setScale(s);
+					Sys.prefSet("scale", s);
+				}
+				break;
+
+			case ITEM_SCALE_DOWN:
+				s = Sys.prefGet("scale", 1.0f) - 0.25f;
+
+				if (s >= 0.5) {
+					current.setScale(s);
+					Sys.prefSet("scale", s);
+				}
+				break;
+				
+			case ITEM_SCREENSHOT:
+				Sys.getString(i18n.get("Screenshot"), "screen.png", this);
+				break;
+
+		}
+		return true;
+	};
+	
+	return this;
+}
+
+settings = settingsClass();

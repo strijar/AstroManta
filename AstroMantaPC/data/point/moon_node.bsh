@@ -1,0 +1,36 @@
+import swisseph.SweConst;
+
+Sys.lib("point/oposite.bsh");
+Sys.i18n("point/moon_node.json");
+
+void PointMoonNode(Chart chart, ViewChart view) {
+	// NNode
+
+	nnode = chart.addSwissPlanet(SweConst.SE_TRUE_NODE);
+
+	nnode.setName("NNode");
+	nnode.setCategory("Fictitious");
+
+	v = view.addPlanet(nnode, "pic/nnode.png");
+
+	v.getPaintText().setColor(0x808080, 255);
+	v.getPaint().setColor(0x808080, 128);
+	v.setSize(5);
+
+	// SNode
+
+	snode = chart.addCalcSpot();
+
+	snode.setName("SNode");
+	snode.setCategory("Fictitious");
+	snode.setBag(object());
+	snode.getBag().no_info = true;
+
+	snode.setCalcListener(CalcOposite, nnode.getEcliptic());
+
+	v = view.addPlanet(snode, "pic/snode.png");
+
+	v.getPaintText().setColor(0x808080, 255);
+	v.getPaint().setColor(0x808080, 128);
+	v.setSize(5);
+}

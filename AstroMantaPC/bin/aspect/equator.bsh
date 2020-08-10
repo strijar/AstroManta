@@ -1,0 +1,30 @@
+i18n.add("ru", "Equatorial",	"Экваториальный");
+i18n.add("ru", "Parallel",		"Параллель");
+i18n.add("ru", "ContrParallel",	"Контрпараллель");
+
+void AspectEquator(view) {
+    aspects = view.getAspectTable();
+    equ = aspects.addEquator(1.0);
+
+    equ.oneSide(i18n.get("Parallel"));
+    equ.diffSide(i18n.get("ContrParallel"));
+
+    equ.excludeCategory("Axis");
+    equ.excludeCategory("House");
+    equ.excludeCategory("Fictitious");
+
+    v = view.addAspectCurve(i18n.get("Parallel"), 0.2f);
+
+    v.getPaint().setColor(0x00FF00, 128);
+    v.getPaint().setStrokeWidth(2);
+
+    v = view.addAspectCurve(i18n.get("ContrParallel"), 0.2f);
+
+    v.getPaint().setColor(0x0000FF, 128);
+    v.getPaint().setStrokeWidth(2);
+
+    tag = i18n.get("Equatorial");
+
+    equ.setTag(tag);
+    Tags.Add("asp_equator", tag, aspects);
+}

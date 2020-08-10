@@ -1,0 +1,591 @@
+import android.view.MotionEvent;
+
+Sys.lib("init/zodiac.bsh");
+Sys.lib("point/natal.bsh");
+Sys.lib("point/transit.bsh");
+Sys.lib("point/progres.bsh");
+Sys.lib("aspect/classic.bsh");
+Sys.lib("aspect/transit.bsh");
+Sys.lib("info/moment.bsh");
+Sys.lib("info/point.bsh");
+Sys.lib("info/aspect.bsh");
+Sys.lib("info/firdar.bsh");
+
+i18n.add("ru", "Prognose",					"Прогноз");
+i18n.add("ru", "Rotate",					"Вращение карты");
+i18n.add("ru", "Rotate...",					"Вращение карты...");
+i18n.add("ru", "Edit", 						"Редактировать");
+i18n.add("ru", "Load", 						"Загрузить");
+i18n.add("ru", "Save", 						"Сохранить");
+i18n.add("ru", "Chart note",				"Примечание к карте");
+i18n.add("ru", "Inner",						"Внутреняя");
+
+i18n.add("ru", "Natal only",				"Только натал");
+i18n.add("ru", "Transit",					"Транзит");
+i18n.add("ru", "Ecliptic direction",		"Дирекции по эклиптике");
+i18n.add("ru", "Equator direction",			"Дирекции по экватору");
+i18n.add("ru", "Progression",				"Прогрессия");
+i18n.add("ru", "Progression only",			"Только прогрессия");
+i18n.add("ru", "Sun revolution",			"Возвращение Солнца");
+i18n.add("ru", "Moon revolution",			"Возвращение Луны");
+i18n.add("ru", "Revolution only",			"Только возвращение");
+
+i18n.add("ru", "Natal chart start Asc",		"Начало от Asc натала");
+i18n.add("ru", "Inner chart start Asc",		"Начало от Asc внутреней");
+
+i18n.add("ru", "Rotate natal", 				"Вращение натала");
+i18n.add("ru", "Rotate inner chart", 		"Вращение внутренней карты");
+
+i18n.add("ru", "Visible",					"Видимая");
+i18n.add("ru", "Aspected only",				"Только аспектируется");
+i18n.add("ru", "Aspecting only",			"Только аспектирует");
+i18n.add("ru", "Aspected and aspecting",	"Аспектируется и аспектирует");
+
+prognoseClass() {
+	String		name = i18n.get("Prognose");
+	ViewChart	view;
+	Spot		near;
+
+	ChartNatal	natal;
+	Chart		transit;
+	Chart		direct_ecl;
+	Chart		direct_eq;
+	Chart		progres;
+	Chart		revolution;
+	Chart		inner;
+	Chart		active;
+
+	AspectTable	aspects;
+
+	Integer		pen_x;
+	Integer		pen_y;
+	
+	Runnable	InitTask;
+	Runnable	FullInfoTask;
+	Runnable	CalcTask;
+	Runnable	FullUpdateTask;
+	Object[]	signs;
+
+	Runnable InitTask = new Runnable() {
+		void run() {
+			Info.setVisible(false, ViewCharts.getWidth()/2);
+
+			Info.clear();
+			Charts.clear();
+			ViewCharts.clear();
+			Tags.clear();
+			
+			Init();
+			setScale(Sys.prefGet("scale", 1.0f));
+
+			workspace.Current(this);
+		}
+	};
+
+	void onPrepareWorkspaceMenu(menu) {
+		menu.add(name).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+			boolean onMenuItemClick(MenuItem item) {
+				Sys.asyncTaskWait(InitTask);
+				return true;
+			};
+		});
+	};
+
+	void onCalc(Object arg) {
+		aspects.calc();
+	};
+
+	void onEdit(chart) {
+		Sys.prefSet("prognose_store", Charts.store());
+		Sys.asyncTask(FullUpdateTask);
+	};
+
+	void onString(str) {
+		natal.setVar("note", str);
+	};
+
+	ITEM_NATAL_EDIT 		= 1;
+	ITEM_NATAL_LOAD 		= 2;
+	ITEM_NATAL_SAVE 		= 3;
+	ITEM_NATAL_NOTE 		= 4;
+	ITEM_NATAL_START 		= 5;
+	ITEM_NATAL_ROTATE 		= 6;
+
+	ITEM_INNER_EDIT 		= 11;
+	ITEM_INNER_LOAD 		= 12;
+	ITEM_INNER_SAVE 		= 13;
+	ITEM_INNER_START 		= 14;
+	ITEM_INNER_ROTATE 		= 15;
+
+	ITEM_NATAL_ONLY			= 21;
+	ITEM_TRANSIT			= 22;
+	ITEM_ECL_DIR			= 23;
+	ITEM_EQU_DIR			= 24;
+	ITEM_PROGRES			= 25;
+	ITEM_PROGRES_ONLY		= 26;
+	ITEM_REV_SUN			= 27;
+	ITEM_REV_MOON			= 28;
+	ITEM_REV_ONLY			= 29;
+
+	void SetStart(chart) {
+		start = chart.getSpot("Asc");
+		Sys.prefSet("start_asc", true);
+		view.setStart(start);
+	};
+
+	void InnerTo(chart) {
+		natal.setVisible(true);
+        
+		inner.setVisible(false);
+		inner = chart;
+		inner.setVisible(true);
+
+		aspects.aspected(natal, chart);
+		active = chart;
+
+		if (Sys.prefGet("start_asc", true))
+			view.setStart(natal.getSpot("Asc"));
+		
+		Update();
+	};
+
+	void InnerOnly(chart) {
+		natal.setVisible(false);
+        
+		inner.setVisible(false);
+		inner = chart;
+		inner.setVisible(true);
+
+		aspects.aspected(chart);
+		active = chart;
+
+		if (Sys.prefGet("start_asc", true))
+			view.setStart(chart.getSpot("Asc"));
+		
+		Update();
+	};
+
+	void SetPoints(moved, moveto) {
+		Spot point = revolution.getSpot(moved);
+
+		revolution.moved(point);
+		revolution.setTo(natal.getSpot(moveto).getEcliptic());
+	};
+
+	OnMenuItemClickListener MenuClick = new OnMenuItemClickListener() {
+		boolean onMenuItemClick(MenuItem item) {
+			switch (item.getItemId()) {
+				case ITEM_NATAL_EDIT:
+					Sys.edit(natal, this);
+					break;
+
+				case ITEM_NATAL_LOAD:
+					Sys.load(natal, this);
+					break;
+				
+				case ITEM_NATAL_SAVE:
+					Sys.save(natal);
+					break;
+					
+				case ITEM_NATAL_NOTE:
+					Sys.getString(i18n.get("Chart note"), natal.getVar("note"), this);
+					break;
+			
+				case ITEM_NATAL_START:
+					SetStart(natal);
+					ViewCharts.repaint();
+					break;
+
+				case ITEM_NATAL_ROTATE:
+					active = natal;
+					Sys.toast(i18n.get("Rotate natal"));
+					break;
+
+				//
+
+				case ITEM_INNER_EDIT:
+					Sys.edit(inner, this);
+					break;
+
+				case ITEM_INNER_LOAD:
+					Sys.load(inner, this);
+					break;
+				
+				case ITEM_INNER_SAVE:
+					Sys.save(inner);
+					break;
+					
+				case ITEM_INNER_START:
+					SetStart(inner);
+					ViewCharts.repaint();
+					break;
+					
+				case ITEM_INNER_ROTATE:
+					active = inner;
+					Sys.toast(i18n.get("Rotate inner chart"));
+					break;
+
+				//
+					
+				case ITEM_NATAL_ONLY:
+					natal.setVisible(true);
+					inner.setVisible(false);
+					inner = transit;
+
+					aspects.clear();
+					AspectClassic(view);
+					aspects.aspected(natal);
+					active = natal;
+
+					SetStart(natal);
+					Update();
+					break;
+
+				case ITEM_TRANSIT:
+					aspects.clear();
+					AspectTransit(view);
+					InnerTo(transit);
+					break;
+
+				case ITEM_ECL_DIR:
+					aspects.clear();
+					AspectTransit(view);
+					InnerTo(direct_ecl);
+					break;
+
+				case ITEM_EQU_DIR:
+					aspects.clear();
+					AspectTransit(view);
+					InnerTo(direct_eq);
+					break;
+
+				case ITEM_PROGRES:
+					aspects.clear();
+					AspectTransit(view);
+					InnerTo(progres);
+					break;
+
+				case ITEM_PROGRES_ONLY:
+					aspects.clear();
+					AspectClassic(view);
+					InnerOnly(progres);
+					break;
+
+				case ITEM_REV_SUN:
+					aspects.clear();
+                    AspectTransit(view);
+                    SetPoints("Sun", "Sun");
+                    InnerTo(revolution);
+					break;
+
+				case ITEM_REV_MOON:
+					aspects.clear();
+                    AspectTransit(view);
+                    SetPoints("Moon", "Moon");
+                    InnerTo(revolution);
+					break;
+
+				case ITEM_REV_ONLY:
+					aspects.clear();
+					AspectClassic(view);
+					InnerOnly(revolution);
+					break;
+			}
+			return true;
+		}
+	};
+
+	void onPrepareOptionsMenu(menu) {
+		sub = menu.addSubMenu(i18n.get("Natal"));
+
+		sub.add(Menu.NONE, ITEM_NATAL_EDIT, Menu.NONE, i18n.get("Edit")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_NATAL_LOAD, Menu.NONE, i18n.get("Load")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_NATAL_SAVE, Menu.NONE, i18n.get("Save")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_NATAL_ROTATE, Menu.NONE, i18n.get("Rotate")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_NATAL_NOTE, Menu.NONE, i18n.get("Chart note")).setOnMenuItemClickListener(MenuClick);
+
+		sub = menu.addSubMenu(i18n.get("Inner"));
+
+		sub.add(Menu.NONE, ITEM_INNER_EDIT, Menu.NONE, i18n.get("Edit")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_INNER_LOAD, Menu.NONE, i18n.get("Load")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_INNER_SAVE, Menu.NONE, i18n.get("Save")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_INNER_ROTATE, Menu.NONE, i18n.get("Rotate")).setOnMenuItemClickListener(MenuClick);
+
+		sub = menu.addSubMenu(i18n.get("Show"));
+
+		sub.add(Menu.NONE, ITEM_NATAL_ONLY, Menu.NONE, i18n.get("Natal only")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_TRANSIT, Menu.NONE, i18n.get("Transit")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_ECL_DIR, Menu.NONE, i18n.get("Ecliptic direction")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_EQU_DIR, Menu.NONE, i18n.get("Equator direction")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_PROGRES, Menu.NONE, i18n.get("Progression")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_PROGRES_ONLY, Menu.NONE, i18n.get("Progression only")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_REV_SUN, Menu.NONE, i18n.get("Sun revolution")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_REV_MOON, Menu.NONE, i18n.get("Moon revolution")).setOnMenuItemClickListener(MenuClick);
+		sub.add(Menu.NONE, ITEM_REV_ONLY, Menu.NONE, i18n.get("Revolution only")).setOnMenuItemClickListener(MenuClick);
+	};
+	
+	void onPrepareSettingsMenu(menu) {
+		menu.add(Menu.NONE, ITEM_NATAL_START, Menu.NONE, i18n.get("Natal chart start Asc")).setOnMenuItemClickListener(MenuClick);
+		menu.add(Menu.NONE, ITEM_INNER_START, Menu.NONE, i18n.get("Inner chart start Asc")).setOnMenuItemClickListener(MenuClick);
+	};
+
+	Runnable FullUpdateTask = new Runnable() {
+		void run() {
+			CalcTask.run();
+			FullInfoTask.run();
+		}
+	};
+
+	Runnable CalcTask = new Runnable() {
+		void run() {
+			Charts.calc();
+			ViewCharts.repaint();
+		}
+	};
+
+	Runnable FullInfoTask = new Runnable() {
+		void run() {
+			String str = "";
+			
+			if (natal.getVisible()) {
+				if (natal.getInfo() != null) {
+					str = "<b>" + natal.getInfo() + "</b><br>";
+				}
+
+				str += "<b>" + InfoMoment(natal.getMoment()) + "</b>";
+				str += InfoPoint(natal, signs);
+			}
+
+			str += "<p><b>" + InfoMoment(transit.getMoment()) + "</b>";
+			str += InfoFirdar.Info(natal, transit);
+
+			if (inner.getVisible()) {
+				str += InfoPoint(inner, signs);
+			}
+
+			str += "<hr>" + InfoAspect(aspects);
+
+			Info.out("<pre>" + str + "</pre>");
+		}
+	};
+	
+	void Init() {
+		view = Zodiac();
+
+		int x = ViewCharts.getWidth()/2;
+		int y = ViewCharts.getHeight()/2;
+
+		view.setCenter(x, y);
+		view.setRadius(ViewCharts.getHeight()/2 - 2);
+
+		//
+
+		natal = Charts.addNatal();
+
+		PointNatal(natal, view);
+
+		natal.getPlace().setInfo(Sys.prefGet("place_name", ""));
+		natal.getPlace().setLat(Sys.prefGet("place_lat", 0.0f));
+		natal.getPlace().setLon(Sys.prefGet("place_lon", 0.0f));
+
+		natal.getMoment().now();
+		natal.getMoment().setTimeZoneId(Sys.prefGet("place_zone", "GMT"));
+
+		natal.setHouse(Sys.prefGet("natal_house", 7));
+		
+		//
+
+		transit = Charts.addNatal();
+
+		PointTransit(transit, view);
+
+		transit.getPlace().setInfo(Sys.prefGet("place_name", ""));
+		transit.getPlace().setLat(Sys.prefGet("place_lat", 0.0f));
+		transit.getPlace().setLon(Sys.prefGet("place_lon", 0.0f));
+
+		transit.getMoment().now();
+		transit.getMoment().setTimeZoneId(Sys.prefGet("place_zone", "GMT"));
+
+		active = transit;
+		inner = transit;
+		
+		//
+
+		direct_ecl = Charts.addEclipticDirect();
+
+        direct_ecl.setParent(natal);
+        direct_ecl.setMoment(transit.getMoment());
+        direct_ecl.setVisible(false);
+
+        PointNatal(direct_ecl, view);
+
+		//
+
+		direct_eq = Charts.addEquatorDirect();
+
+        direct_eq.setParent(natal);
+        direct_eq.setMoment(transit.getMoment());
+        direct_eq.setVisible(false);
+
+        PointNatal(direct_eq, view);
+
+		//
+
+		progres = Charts.addProgress();
+
+        progres.setParent(natal);
+        progres.setMoment(transit.getMoment());
+        progres.setPlace(natal.getPlace());
+        progres.setVisible(false);
+
+        PointProgres(progres, view);
+
+		//
+
+		revolution = Charts.addRevolution();
+
+        PointProgres(revolution, view);
+		SetPoints("Sun", "Sun");
+
+        revolution.setInfo("Revolution");
+        revolution.getPlace().setInfo(Sys.prefGet("place_name", ""));
+        revolution.getPlace().setLat(Sys.prefGet("place_lat", 0.0f));
+        revolution.getPlace().setLon(Sys.prefGet("place_lon", 0.0f));
+        revolution.setHouse(Sys.prefGet("natal_house", 7));
+
+        revolution.setMoment(transit.getMoment());
+        revolution.setVisible(false);
+
+		//
+
+		Charts.load(Sys.prefGet("prognose_store", ""));
+
+		aspects = view.getAspectTable();
+
+		AspectTransit(view);
+
+		aspects.aspected(transit, natal);
+
+		if (Sys.prefGet("sign_pic", false)) {
+			signs = view.getSignLabels();
+		}
+
+		if (Sys.prefGet("start_asc", true)) {
+			view.setStart(natal.getSpot("Asc"));
+		}
+
+		Charts.setAfterCalcListener(this);
+		Charts.calc();
+		
+		ViewCharts.setTouchListener(this);
+		Sys.asyncTask(FullInfoTask);
+	};
+
+	void setScale(Float scale) {
+		view.setScale(scale);
+		ViewCharts.repaint();
+	}
+	
+	void InfoSigns(on) {
+		signs = on ? view.getSignLabels() : null;
+		Sys.asyncTask(FullInfoTask);
+	}
+
+	void ZodiacDir(cw) {
+		view.setDir(cw);
+		ViewCharts.repaint();
+	}
+
+	void ShortInfo(String msg) {
+		String res = msg + "<hr>";
+
+		if (active.getInfo() != null) {
+			res += "<b>" + active.getInfo() + "</b><br>";
+		}
+
+		res += InfoMoment(active.getMoment());
+		res += InfoFirdar.Info(natal, transit);
+
+		Info.out("<pre>" + res + "</res>");
+	}
+
+	void Update() {
+		Sys.asyncTask(FullUpdateTask);
+	}
+
+	boolean onTouchEvent(MotionEvent event) {
+		Integer x = event.getX();
+		Integer y = event.getY();
+
+		switch(event.getAction()) {
+			case (MotionEvent.ACTION_DOWN):
+				near = ViewCharts.getNear(x, y, 20);
+				Sys.taskRemove(FullInfoTask);
+				pen_x = x;
+				pen_y = y;
+				ShortInfo(i18n.get("Rotate"));
+				break;
+
+			case (MotionEvent.ACTION_MOVE):
+				pen_step = ViewCharts.getHeight() / 10;
+				delta = pen_x - x;
+
+				if (Math.abs(delta) > pen_step) {
+					active.getMoment().rotate(delta > 0 ? workspace.rotate_step : -workspace.rotate_step);
+
+					ShortInfo(i18n.get("Rotate"));
+					Sys.taskRemove(CalcTask);
+					Sys.taskDelayed(CalcTask, 100);
+
+					pen_x = x;
+					pen_y = y;
+					near = null;
+				}
+				break;
+
+			case (MotionEvent.ACTION_UP):
+				if (near != null) {
+					String	info = near.getName() + ":";
+
+					if (near.getAspecting()) {
+						if (near.getAspected()) {
+							Sys.toast(info + i18n.get("Visible"));
+							near.setAspecting(false);
+							near.setAspected(false);
+						} else {
+							Sys.toast(info + i18n.get("Aspected and aspecting"));
+							near.setAspecting(true);
+							near.setAspected(true);
+						}
+					} else {
+						if (near.getAspected()) {
+							Sys.toast(info + i18n.get("Aspecting only"));
+							near.setAspecting(true);
+							near.setAspected(false);
+						} else {
+							Sys.toast(info + i18n.get("Aspected only"));
+							near.setAspecting(false);
+							near.setAspected(true);
+						}
+					}
+					
+					near = null;
+					aspects.calc();
+				}
+			
+				ShortInfo(i18n.get("Rotate..."));
+				Sys.taskRemove(FullInfoTask);
+				Sys.taskDelayed(FullInfoTask, 2000);
+				Sys.prefSet("prognose_store", Charts.store());
+				ViewCharts.repaint();
+				break;
+		}
+
+		return true;
+	}
+
+	return this;
+}
+
+workspace.Register(prognoseClass());
+Info.out("Prognose loaded");

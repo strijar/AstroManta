@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        style="@style/EditLabel"
+        android:text="@string/eclipse_find" />
+
+    <Spinner
+        android:id="@+id/edit_eclipse_find"
+        style="@style/EditItem"
+        android:layout_span="2"
+        android:entries="@array/eclipse_find" />
+</TableRow>

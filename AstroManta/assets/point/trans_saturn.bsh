@@ -1,0 +1,20 @@
+import swisseph.SweConst;
+
+void PointTransSaturn(Chart chart, ViewChart view) {
+	void insert(id, pic, color, name, category) {
+		p = chart.addSwissPlanet(id);
+
+		p.setName(name);
+		p.setCategory(category);
+
+		v = view.addPlanet(p, pic);
+
+		v.getPaintText().setColor(color, 255);
+		v.getPaint().setColor(color, 128);
+		v.setSize(5);
+	}
+
+	insert(SweConst.SE_URANUS,	"pic/uranus.png",	0x0080FF, "Uranus",		"Minor");
+	insert(SweConst.SE_NEPTUNE,	"pic/neptune.png",	0x0000C0, "Neptune",	"Minor");
+	insert(SweConst.SE_PLUTO,	"pic/pluto.png",	0xC00000, "Pluto",		"Minor");
+}

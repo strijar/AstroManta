@@ -1,0 +1,45 @@
+import ru.strijar.astro.*;
+import ru.strijar.astro.listener.*;
+import ru.strijar.astromanta.android.*;
+import ru.strijar.astromanta.android.listener.*;
+
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.SubMenu;
+import android.util.Log;
+
+ViewCharts.setBackground("pic/paper.png");
+Info.setVisible(true, -2);
+
+start = new Runnable() {
+	void run() {
+		Info.out("System loading");
+
+		Sys.run("init/tags.bsh");
+		Sys.run("init/settings.bsh");
+		Sys.run("init/workspace.bsh");
+
+		Info.out("System loaded");
+
+		i18n.add("ru", "History (RU)", "История");
+		i18n.add("ru", "To get started select a workspace into <b>Menu</b>", "Для начала работы выберите рабочий стол через <b>Меню</b>");
+
+		args = new Object[]{ 
+			i18n.get("History (RU)"), 
+			i18n.get("To get started select a workspace into <b>Menu</b>")
+		};
+
+		Info.out(
+			String.format(
+				"<center>" +
+				"<img src='astromanta://pic/logo.png'>" +
+				"<p><b>AstroManta v5.1</b><br><a href='astromanta://history.html'>%s</a>" +
+				"</p><p>%s</p></center>",
+				args
+			)
+		);
+	}
+};
+
+Sys.asyncTaskWait(start);

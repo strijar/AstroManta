@@ -1,0 +1,70 @@
+i18n.add("ru", "Day", "День");
+i18n.add("ru", "Hour", "Час");
+
+InfoHourClass () {
+	String[] lord = new String[] {
+		"Sun",
+		"Venus",
+		"Mercury",
+		"Moon",
+		"Saturn",
+		"Jupiter",
+		"Mars"
+    };
+
+    Integer[] day = new Integer[] {
+		0,	// Вс	Солнце
+		3,	// Пн 	Луна
+		6,	// Вт	Марс
+		2,	// Ср	Меркурий
+		5,	// Чт	Юпитер
+		1,	// Пт	Венера
+		4	// Сб	Сатурн
+    };
+
+	Date	moment;
+	Place	place;
+	Spot	sun;
+	Date	rise = new Date();
+	Date	set = new Date();
+	Double	len, hour;
+	Integer	day_lord, hour_lord;
+
+	String Info(chart) {
+    	moment = chart.getMoment();
+    	place = chart.getPlace();
+    	sun = chart.getSpot("Sun");
+
+    	sun.calcRiseTime(place, moment.getJD() - 1.0, rise);
+    	sun.calcSetTime(place, rise.getJD(), set);
+
+    	len = set.getJD() - rise.getJD();
+
+    	if (chart.getSpot("Asc").angle(sun) < 0) {
+			hour = (moment.getJD() - rise.getJD()) / len * 12;
+    	} else {
+			len = 1.0 - len;
+			hour = (moment.getJD() - set.getJD()) / len * 12 + 12;
+    	}
+
+    	if (hour < 0) {
+        	hour = 0;
+    	} else if (hour > 23) {
+			hour = 23;
+    	}
+
+    	day_lord = day[rise.getDayOfWeekNr(rise.getJD() + moment.getTimeZone() / 24.0)];
+    	hour_lord = (day_lord + hour.intValue()) % 7;
+
+    	String res = "<table>" +
+			"<tr><td>" + i18n.get("Day") + "</td><td>" + InfoPointPic(lord[day_lord]) + "</td></tr>" +
+			"<tr><td>" + i18n.get("Hour") + "</td><td>" + InfoPointPic(lord[hour_lord]) + "</td></tr>" +
+			"</table>";
+
+    	return res;
+	}
+
+	return this;
+};
+
+InfoHour = InfoHourClass();

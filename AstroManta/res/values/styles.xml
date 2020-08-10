@@ -1,0 +1,31 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="EditLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:gravity">right</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <style name="EditHead" parent="EditLabel">
+        <item name="android:gravity">center</item>
+        <item name="android:layout_span">3</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+    
+    <style name="EditItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:ems">10</item>
+    </style>
+
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
+	</style>
+    
+    <style name="AppTheme.FullScreen" parent="AppTheme">
+    	<item name="android:windowActionBar">false</item>
+    	<item name="android:windowNoTitle">true</item>
+	</style>
+</resources>

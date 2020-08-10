@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="toolbar_size">48dp</dimen>
+    <dimen name="corner_radius">12dp</dimen>
+</resources>

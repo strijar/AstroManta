@@ -1,0 +1,21 @@
+i18n.add("ru", "Sunday", "Воскресенье");
+i18n.add("ru", "Monday", "Понедельник");
+i18n.add("ru", "Tuesday", "Вторник");
+i18n.add("ru", "Wednesday", "Среда");
+i18n.add("ru", "Thursday", "Четверг");
+i18n.add("ru", "Friday", "Пятница");
+i18n.add("ru", "Sunday", "Суббота");
+
+WDays = new String[] {
+	i18n.get("Sunday"),
+	i18n.get("Monday"),
+	i18n.get("Tuesday"),
+	i18n.get("Wednesday"),
+	i18n.get("Thursday"),
+	i18n.get("Friday"),
+	i18n.get("Sunday") 
+};
+
+String InfoMoment(moment) {
+	return moment.getDateStr() + " " + moment.getTimeStr() + " " + moment.getTimeZoneStr() + " " + WDays[moment.getDayOfWeekNr()];
+}

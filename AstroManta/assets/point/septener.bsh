@@ -1,0 +1,24 @@
+import swisseph.SweConst;
+
+void PointSeptener(Chart chart, ViewChart view) {
+	void insert(id, pic, color, name, category) {
+		p = chart.addSwissPlanet(id);
+
+		p.setName(name);
+		p.setCategory(category);
+
+		v = view.addPlanet(p, pic);
+
+		v.getPaintText().setColor(color, 255);
+		v.getPaint().setColor(color, 128);
+		v.setSize(5);
+	}
+
+	insert(SweConst.SE_SUN,		"pic/sun.png",		0xFF5000, 	"Sun",		"Shine");
+	insert(SweConst.SE_MOON,	"pic/moon.png",		0x008000, 	"Moon",		"Shine");
+	insert(SweConst.SE_MERCURY,	"pic/mercury.png",	0x00A0A0, 	"Mercury",	"Major");
+	insert(SweConst.SE_VENUS,	"pic/venus.png",	0x00B000, 	"Venus",	"Major");
+	insert(SweConst.SE_MARS,	"pic/mars.png", 	0xFF0000, 	"Mars",		"Major");
+	insert(SweConst.SE_JUPITER,	"pic/jupiter.png",	0x0000FF, 	"Jupiter",	"Minor");
+	insert(SweConst.SE_SATURN,	"pic/saturn.png",	0x000000, 	"Saturn",	"Minor");
+}

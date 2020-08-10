@@ -1,0 +1,33 @@
+void PointHouseOutside(Chart chart, ViewChart view) {
+	void insert(id, name, color, out) {
+		Spot p = chart.addHouseCusp(id);
+
+		p.setName(name);
+		p.setCategory("House");
+
+		v = view.addInside(p);
+
+		v.getPaint().setColor(color, 128);
+
+		if (out) {
+			l = view.addOutsideInfo(p);
+		
+			l.setPaint(v.getPaint());
+			l.setSize(view.getSizeChart() * 2/3);
+			l.getPaintText().setColor(color, 255);
+		}
+	};
+	
+	insert(1,	"I", 	0x00B000, 	false);
+	insert(2,	"II", 	0x555555,	true);
+	insert(3,	"III", 	0x555555,	true);
+	insert(4,	"IV",	0xB00000, 	false);
+	insert(5,	"V",	0x555555,	true);
+	insert(6,	"VI", 	0x555555,	true);
+	insert(7,	"VII",	0x00B000, 	false);
+	insert(8,	"VIII", 0x555555,	true);
+	insert(9,	"IX", 	0x555555,	true);
+	insert(10,	"X", 	0xB00000, 	false);
+	insert(11,	"XI", 	0x555555,	true);
+	insert(12,	"XII",	0x555555,	true);
+};

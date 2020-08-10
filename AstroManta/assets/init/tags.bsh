@@ -1,0 +1,99 @@
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnMultiChoiceClickListener;
+
+i18n.add("ru", "Hide/Show",	"Скрыть/Показать");
+
+TagsClass() {
+	items = new ArrayList();
+
+	Item(name, info, obj) {
+		this.name = name;
+		this.info = info;
+		this.val = Sys.prefGet(name, true);
+		this.root = new ArrayList();
+	
+		void Add(item) {
+			root.add(item);
+			item.visibleTag(val, info);
+		};
+		
+		if (obj != null) { 
+			Add(obj);
+		}
+
+		void Change(on) {
+			val = on;
+			Sys.prefSet(name, on);
+
+			iterator = root.iterator();
+
+			while (iterator.hasNext()) {
+				item = iterator.next();
+			
+				item.visibleTag(on, info);
+			}
+
+			workspace.current.Update();
+		};
+
+		return this;
+	};
+
+	void clear() {
+		items.clear();
+	}
+
+	void Add(name, info, root) {
+		iterator = items.iterator();
+
+		while (iterator.hasNext()) {
+			item = iterator.next();
+			
+			if (item.info == info) {
+				item.Add(root);
+				return;
+			}
+		}
+
+		item = Item(name, info, root);
+		items.add(item);
+	};
+
+	ItemClick = new OnMultiChoiceClickListener() {
+		public void onClick(DialogInterface dialog, int pos, boolean on) {
+			item = items.get(pos);
+
+			item.Change(on);
+		};
+	};
+
+	void Dialog() {
+		adb = new AlertDialog.Builder(Sys);
+
+		adb.setTitle(i18n.get("Hide/Show"));
+
+		size = items.size();
+		keys = new CharSequence[size];
+		vals = new boolean[size];
+
+		i = 0;
+		iterator = items.iterator();
+			
+		while (iterator.hasNext()) {
+			item = iterator.next();
+
+			keys[i] = item.info;
+			vals[i] = item.val;
+			i++;
+		}
+
+		adb.setMultiChoiceItems(keys, vals, ItemClick);
+		adb.show();
+	};
+
+	return this;
+};
+
+Tags = TagsClass();
+ 

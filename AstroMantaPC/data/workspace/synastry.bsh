@@ -1,0 +1,391 @@
+Sys.lib("init/zodiac.bsh");
+Sys.lib("point/natal.bsh");
+Sys.lib("point/lunation.bsh");
+
+Sys.lib("info/moment.bsh");
+Sys.lib("info/point.bsh");
+Sys.lib("info/aspect.bsh");
+
+Sys.lib("aspect/classic.bsh");
+Sys.lib("aspect/equator.bsh");
+
+Sys.i18n("workspace/synastry.json");
+
+synastryClass() {
+	String		name = i18n.get("Synastry");
+	ViewChart	view_l;
+	ViewChart	view_r;
+	ViewChart	view;
+
+	ChartNatal	natal_l;
+	ChartNatal	natal_r;
+	ChartNatal	avr;
+	ChartNatal	active_chart;
+	
+	AspectTable	aspects_l;
+	AspectTable	aspects_r;
+	AspectTable	aspects;
+
+	String		info;
+	
+	Integer		pen_x;
+	Integer		pen_y;
+
+	Runnable	InitTask;
+	Object[]	signs;
+
+	AstroWorker UpdateWorker = new AstroWorker() {
+		void doInBackground() {
+    		Charts.calc();
+			FullInfo();
+		};
+		
+		void done() {
+    		ViewCharts.repaint();
+    		Info.out(info);
+		};
+	};
+
+	Runnable InitTask = new Runnable() {
+		void run() {
+			Charts.clear();
+			ViewCharts.clear();
+			Tags.clear();
+			
+			Init();
+			setScale(Sys.prefGet("scale", 1.0f));
+			workspace.Current(this);
+		}
+	};
+
+	void onPrepareWorkspaceMenu(sub) {
+		JMenuItem item = new JMenuItem(name);
+		
+		item.addActionListener(new ActionListener() {
+			 public void actionPerformed(ActionEvent e) {
+			 	SwingUtilities.invokeLater(InitTask);
+			 }
+		});
+
+		sub.add(item);
+	};
+
+	ITEM_L_EDIT			= 1;
+	ITEM_L_LOAD			= 2;
+	ITEM_L_SAVE			= 3;
+	ITEM_L_NOTE 		= 4;
+	ITEM_L_ROTATE 		= 5;
+
+	ITEM_R_EDIT			= 6;
+	ITEM_R_LOAD			= 7;
+	ITEM_R_SAVE			= 8;
+	ITEM_R_NOTE 		= 9;
+	ITEM_R_ROTATE 		= 10;
+
+	ITEM_SHOW_BOTH 		= 11;
+	ITEM_SHOW_AVR		= 12;
+	ITEM_START_L 		= 13;
+	ITEM_START_R 		= 14;
+
+	public void actionPerformed(e) {
+		AstroMenuItem item = e.getSource();
+		
+		switch (item.getItemId()) {
+			case ITEM_L_EDIT:
+				Sys.edit(natal_l, this);
+				break;
+				
+			case ITEM_L_LOAD:
+				Sys.load(natal_l, this);
+				break;
+
+			case ITEM_L_SAVE:
+				Sys.save(natal_l);
+				break;
+
+			case ITEM_L_NOTE:
+				String note = natal_l.getVar("note");
+				
+				note = Sys.getString(i18n.get("Chart note"), note);
+				
+				if (note != null) {
+					natal_l.setVar("note", note);
+				}
+				break;
+
+			case ITEM_L_ROTATE:
+				active_chart = natal_l;
+				Sys.toast(i18n.get("Rotate left chart"));
+				break;
+
+			case ITEM_R_EDIT:
+				Sys.edit(natal_r, this);
+				break;
+				
+			case ITEM_R_LOAD:
+				Sys.load(natal_r, this);
+				break;
+
+			case ITEM_R_SAVE:
+				Sys.save(natal_r);
+				break;
+
+			case ITEM_R_NOTE:
+				String note = natal_r.getVar("note");
+				
+				note = Sys.getString(i18n.get("Chart note"), note);
+				
+				if (note != null) {
+					natal_r.setVar("note", note);
+				}
+				break;
+
+			case ITEM_R_ROTATE:
+				active_chart = natal_r;
+				Sys.toast(i18n.get("Rotate right chart"));
+				break;
+				
+			case ITEM_SHOW_BOTH:
+				view.setVisible(true, natal_l);
+				view.setVisible(true, natal_r);
+				view.setVisible(false, avr);
+				
+				aspects.aspected(natal_r, natal_l);
+				Sys.execute(UpdateWorker);
+				break;
+
+			case ITEM_SHOW_AVR:
+				view.setVisible(false, natal_l);
+				view.setVisible(false, natal_r);
+				view.setVisible(true, avr);
+				view.setStart(avr.getSpot("Asc"));
+				
+				aspects.aspected(avr);
+				Sys.execute(UpdateWorker);
+				break;
+
+			case ITEM_START_L:
+				view.setStart(natal_l.getSpot("Asc"));
+				ViewCharts.repaint();
+				break;
+
+			case ITEM_START_R:
+				view.setStart(natal_r.getSpot("Asc"));
+				ViewCharts.repaint();
+				break;
+		}
+	};
+	
+	void onPrepareMainMenu(menu) {
+		sub = menu.addMenu(i18n.get("Left chart"));
+	
+		sub.addItem(ITEM_L_EDIT, i18n.get("Edit")).addActionListener(this);
+		sub.addItem(ITEM_L_LOAD, i18n.get("Load")).addActionListener(this);
+		sub.addItem(ITEM_L_SAVE, i18n.get("Save")).addActionListener(this);
+		sub.addItem(ITEM_L_NOTE, i18n.get("Chart note")).addActionListener(this);
+		sub.addItem(ITEM_L_ROTATE, i18n.get("Rotate")).addActionListener(this);
+
+		sub = menu.addMenu(i18n.get("Right chart"));
+	
+		sub.addItem(ITEM_R_EDIT, i18n.get("Edit")).addActionListener(this);
+		sub.addItem(ITEM_R_LOAD, i18n.get("Load")).addActionListener(this);
+		sub.addItem(ITEM_R_SAVE, i18n.get("Save")).addActionListener(this);
+		sub.addItem(ITEM_R_NOTE, i18n.get("Chart note")).addActionListener(this);
+		sub.addItem(ITEM_R_ROTATE, i18n.get("Rotate")).addActionListener(this);
+
+		sub = menu.addMenu(i18n.get("Central chart"));
+
+		sub.addItem(ITEM_SHOW_BOTH, i18n.get("Both charts")).addActionListener(this);
+		sub.addItem(ITEM_SHOW_AVR, i18n.get("Average Davison chart")).addActionListener(this);
+		sub.addItem(ITEM_START_L, i18n.get("Start left")).addActionListener(this);
+		sub.addItem(ITEM_START_R, i18n.get("Start right")).addActionListener(this);
+	};
+
+	void onPrepareSettingsMenu(sub) {
+	};
+
+	MouseInputAdapter mouse = new MouseInputAdapter() {
+		public void mousePressed(MouseEvent e) {
+			pen_x = e.getX();
+			pen_y = e.getY();
+		};
+	
+		public void mouseDragged(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+			
+			pen_step = ViewCharts.getHeight() / 10;
+			delta = pen_x - x;
+
+			if (Math.abs(delta) > pen_step) {
+				active_chart.getMoment().rotate(delta > 0 ? workspace.rotate_step : -workspace.rotate_step);
+
+				Sys.execute(UpdateWorker);
+
+				pen_x = x;
+				pen_y = y;
+			}
+    	};
+    	
+    	public void mouseReleased(MouseEvent e) {
+    		Sys.prefSet("synastry_store", Charts.store());
+    	};
+    };
+
+	void Resize() {
+		int r = ViewCharts.getHeight() * 0.32;
+		int x = ViewCharts.getWidth();
+		int y = ViewCharts.getHeight();
+	
+		view_l.setCenter(r, y-r);
+		view_l.setRadius(r-10);
+		
+		view_r.setCenter(x-r, y-r);
+		view_r.setRadius(r-10);
+
+		view.setCenter(x/2, r);
+		view.setRadius(r-10);
+	}
+
+	void onEdit(Chart chart) {
+		Sys.execute(UpdateWorker);
+		Sys.prefSet("synastry_store", Charts.store());
+	};
+
+	void Init() {
+		Sys.maximize();
+	
+		view_l = Zodiac();
+		view_r = Zodiac();
+		view = Zodiac();
+
+		Resize();
+
+		if (Sys.prefGet("sign_pic", false))
+			signs = view.getSignLabels();
+
+		natal_l = Charts.addNatal();
+		PointNatal(natal_l, view_l);
+		PointNewMoon(natal_l, view_l);
+		natal_l.getMoment().now();
+
+		natal_l.setAfterCalcListener(new CalcListener() {
+			void onCalc(Object arg) {
+				aspects_l.calc();
+				avr.calc();
+				aspects.calc();
+			};
+		});
+
+		active_chart = natal_l;
+
+		natal_r = Charts.addNatal();
+		PointNatal(natal_r, view_r);
+		PointNewMoon(natal_r, view_r);
+		natal_r.getMoment().now();
+
+		natal_r.setAfterCalcListener(new CalcListener() {
+			void onCalc(Object arg) {
+				aspects_r.calc();
+				avr.calc();
+				aspects.calc();
+			};
+		});
+
+		avr = Charts.addAverage();
+		avr.setInfo("Average chart");
+		avr.add(natal_l);
+		avr.add(natal_r);
+		PointNatal(avr, view);
+		
+		view.cloneCollection(view_l, natal_l);
+		view.cloneCollection(view_r, natal_r);
+		view.setVisible(false, avr);
+
+		aspects_l = view_l.getAspectTable();
+		aspects_r = view_r.getAspectTable();
+		aspects = view.getAspectTable();
+
+		AspectClassic(view_l);
+		AspectClassic(view_r);
+		AspectClassic(view);
+		
+		aspects_l.aspected(natal_l);
+		aspects_r.aspected(natal_r);
+		aspects.aspected(natal_r, natal_l);
+
+		ViewCharts.addComponentListener(this);
+		ViewCharts.addMouseMotionListener(mouse);
+		ViewCharts.addMouseListener(mouse);
+
+		if (Sys.prefGet("start_asc", true)) {
+			view_l.setStart(natal_l.getSpot("Asc"));
+			view_r.setStart(natal_r.getSpot("Asc"));
+		}
+
+		Charts.load(Sys.prefGet("synastry_store", ""));
+
+    	Charts.calc();
+		FullInfo();
+    	Info.out(info);
+	};
+
+	void FullInfo() {
+    	info = "";
+
+    	if (natal_l.getInfo() != null) {
+			info += "<b>" + natal_l.getInfo() + "</b><br>";
+    	}
+
+    	info += "<b>" + InfoMoment(natal_l.getMoment()) + "</b>";
+    	info += InfoPoint(natal_l, signs);
+
+		info += "<hr>";
+
+    	if (natal_r.getInfo() != null) {
+			info += "<b>" + natal_r.getInfo() + "</b><br>";
+    	}
+
+    	info += "<b>" + InfoMoment(natal_r.getMoment()) + "</b>";
+    	info += InfoPoint(natal_r, signs);
+
+		info += "<hr>";
+
+    	info += "<b>" + InfoMoment(avr.getCalcMoment()) + "</b>";
+    	info += InfoPoint(avr, signs);
+   
+    	info += "<hr>" + InfoAspect(aspects);
+	};
+
+	public void componentResized(ComponentEvent e) {
+		Resize();
+		ViewCharts.repaint();
+    };
+
+	void setScale(Float scale) {
+		view_l.setScale(scale * 0.75f);
+		view_r.setScale(scale * 0.75f);
+		view.setScale(scale * 0.75f);
+		ViewCharts.repaint();
+	}
+
+	void InfoSigns(on) {
+		signs = on ? view_l.getSignLabels() : null;
+		Sys.execute(UpdateWorker);
+	}
+
+	void Update() {
+		Sys.execute(UpdateWorker);
+	}
+
+	void ZodiacDir(cw) {
+		view_l.setDir(cw);
+		view_r.setDir(cw);
+		view.setDir(cw);
+		ViewCharts.repaint();
+	}
+
+	return this;
+}
+
+workspace.Register(synastryClass());

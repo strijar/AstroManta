@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ru.strijar.astromanta"
+    android:versionCode="24"
+    android:versionName="5.1" 
+    android:installLocation="auto" >
+
+    <uses-sdk
+        android:minSdkVersion="11"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <supports-screens android:xlargeScreens="true" android:largeScreens="true" android:resizeable="true" android:normalScreens="true"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/astromanta"
+        android:label="@string/app_name" 
+        android:theme="@style/AppTheme" android:hardwareAccelerated="true">
+
+        <activity
+            android:name="ru.strijar.astromanta.android.Sys"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.FullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+		<activity android:name=".android.ActivityEditNatal" android:screenOrientation="landscape"></activity>
+		<activity android:name=".android.ActivityEditEclipse" android:screenOrientation="landscape"></activity>
+		<activity android:name=".android.ActivityAtlas" android:screenOrientation="landscape"></activity>
+		<activity android:name=".android.ActivityCharts" android:screenOrientation="landscape"></activity>
+		<activity android:name=".android.ActivityPoints" android:screenOrientation="landscape"></activity>
+		<service android:name=".android.AstromantaWallpaper" android:label="AstroManta" android:enabled="true" android:permission="android.permission.BIND_WALLPAPER">
+			<intent-filter><action android:name="android.service.wallpaper.WallpaperService"/></intent-filter>
+			<meta-data android:resource="@xml/wallpaper" android:name="android.service.wallpaper"/>
+		</service>
+				
+	</application>
+</manifest>

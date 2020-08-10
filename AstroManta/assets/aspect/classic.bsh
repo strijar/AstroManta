@@ -1,0 +1,224 @@
+i18n.add("ru", "Cross sign",		"Через знак");
+i18n.add("ru", "Application", 		"Сходящийся");
+i18n.add("ru", "Application exact",	"Сходящийся точный");
+i18n.add("ru", "Separate exact", 	"Расходящийся точный");
+i18n.add("ru", "Separate", 			"Расходящийся");
+
+void AspectClassic(view) {
+	AspectTable			aspects = view.getAspectTable();
+	AspectEcliptic		ecl = aspects.addEcliptic();
+	AspectEclipticOrbis	orbis = ecl.newOrbis(3.5);
+
+	orbis.addName(13.5,	"Sun", 		"Moon");
+	orbis.addName(11,	"Sun", 		"Mercury");
+	orbis.addName(11, 	"Sun", 		"Venus");
+	orbis.addName(11, 	"Sun", 		"Mars");
+	orbis.addName(12, 	"Sun", 		"Jupiter");
+	orbis.addName(12, 	"Sun", 		"Saturn");
+	orbis.addName(9.5,	"Moon", 	"Mercury");
+	orbis.addName(9.5,	"Moon", 	"Venus");
+	orbis.addName(9.5,	"Moon",		"Mars");
+	orbis.addName(10.5,	"Moon",		"Jupiter");
+	orbis.addName(10.5,	"Moon",		"Saturn");
+	orbis.addName(7,		"Mercury",	"Venus");
+	orbis.addName(7,		"Mercury",	"Mars");
+	orbis.addName(8,		"Mercury",	"Jupiter");
+	orbis.addName(8,		"Mercury",	"Saturn");
+	orbis.addName(7,		"Venus",	"Mars");
+	orbis.addName(8,		"Venus",	"Jupiter");
+	orbis.addName(8,		"Venus",	"Saturn");
+	orbis.addName(8,		"Mars",		"Jupiter");
+	orbis.addName(8,		"Mars",		"Saturn");
+	orbis.addName(9,		"Jupiter",	"Saturn");
+
+	ecl.excludeCategory("Axis");
+	ecl.excludeCategory("House");
+	ecl.excludeName("NNode", "SNode");
+
+	//
+
+	String tag_cross 		= i18n.get("Cross sign");
+	String tag_app 			= i18n.get("Application");
+	String tag_app_exact 	= i18n.get("Application exact");
+	String tag_sep_exact 	= i18n.get("Separate exact");
+	String tag_sep 			= i18n.get("Separate");
+	
+	//
+
+	AspectEclipticLon lon;
+
+	lon = ecl.addLon(0, false);
+	lon.setTag(tag_cross);
+	lon.setOrbis(orbis);
+
+	lon.addInfo("0 <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("0 <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("0 ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("0 -->",  0.3,  1.0).setTag(tag_sep);
+
+	lon = ecl.addLon(0, true);
+	lon.setOrbis(orbis);
+
+	lon.excludeName("Sun");
+
+	lon.addInfo("[0] <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("[0] <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("[0] ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("[0] -->",  0.3,  1.0).setTag(tag_sep);
+
+	lon = ecl.addLon(0, true);
+	
+	AspectEclipticOrbis	sun_orbis = ecl.newOrbis();
+	sun_orbis.addName(17.0,	"Sun");
+	lon.setOrbis(sun_orbis);
+
+	lon.addInfoAbs("kazimi",	-0.2833,	0.2833);
+	lon.addInfoAbs("burnt",		-8.5, 		8.5);
+	lon.addInfoAbs("lights",	-17.0, 		17.0);
+
+	//
+
+	lon = ecl.addLon(60, false);
+	lon.setTag(tag_cross);
+	lon.setOrbis(orbis);
+
+	lon.addInfo("60 <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("60 <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("60 ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("60 -->",  0.3,  1.0).setTag(tag_sep);
+
+	lon = ecl.addLon(60, true);
+	lon.setOrbis(orbis);
+
+	lon.addInfo("[60] <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("[60] <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("[60] ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("[60] -->",  0.3,  1.0).setTag(tag_sep);
+
+	//
+
+	lon = ecl.addLon(90, false);
+	lon.setTag(tag_cross);
+	lon.setOrbis(orbis);
+
+	lon.addInfo("90 <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("90 <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("90 ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("90 -->",  0.3,  1.0).setTag(tag_sep);
+
+	lon = ecl.addLon(90, true);
+	lon.setOrbis(orbis);
+
+	lon.addInfo("[90] <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("[90] <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("[90] ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("[90] -->",  0.3,  1.0).setTag(tag_sep);
+
+	//
+
+	lon = ecl.addLon(120, false);
+	lon.setTag(tag_cross);
+	lon.setOrbis(orbis);
+
+	lon.addInfo("120 <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("120 <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("120 ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("120 -->",  0.3,  1.0).setTag(tag_sep);
+
+	lon = ecl.addLon(120, true);
+	lon.setOrbis(orbis);
+
+	lon.addInfo("[120] <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("[120] <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("[120] ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("[120] -->",  0.3,  1.0).setTag(tag_sep);
+
+	//
+
+	lon = ecl.addLon(180, false);
+	lon.setTag(tag_cross);
+	lon.setOrbis(orbis);
+
+	lon.addInfo("180 <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("180 <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("180 ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("180 -->",  0.3,  1.0).setTag(tag_sep);
+
+	lon = ecl.addLon(180, true);
+	lon.setOrbis(orbis);
+
+	lon.addInfo("[180] <--", -1.0, -0.3).setTag(tag_app);
+	lon.addInfo("[180] <-",  -0.3,  0.0).setTag(tag_app_exact);
+	lon.addInfo("[180] ->",   0.0,  0.3).setTag(tag_sep_exact);
+	lon.addInfo("[180] -->",  0.3,  1.0).setTag(tag_sep);
+
+	aspect(info, color, alpha, width) {
+		v = view.addAspect(info);
+		p = v.getPaint();
+
+		p.setColor(color, alpha);
+		p.setStrokeWidth(width);
+		
+		return p;
+	}
+
+	red = 0xFF0000;
+	black = 0x000000;
+	green = 0x00FF00;
+
+	aspect("0 <--",		green,	128,	3).setStyle(3, 3);
+	aspect("0 <-",		green,	255,	3).setStyle(3, 3);
+	aspect("0 ->",		green,	255,	1).setStyle(3, 3);
+	aspect("0 -->",		green,	128,	1).setStyle(3, 3);
+
+	aspect("[0] <--",	green,	128,	3);
+	aspect("[0] <-",	green,	255,	3);
+	aspect("[0] ->",	green,	255,	1);
+	aspect("[0] -->",	green,	128,	1);
+
+	aspect("60 <--",	red,	128,	3).setStyle(3, 3);
+	aspect("60 <-",		red,	255,	3).setStyle(3, 3);
+	aspect("60 ->",		red,	255,	1).setStyle(3, 3);
+	aspect("60 -->",	red,	128,	1).setStyle(3, 3);
+
+	aspect("[60] <--",	red,	128,	3);
+	aspect("[60] <-",	red,	255,	3);
+	aspect("[60] ->",	red,	255,	1);
+	aspect("[60] -->",	red,	128,	1);
+
+	aspect("90 <--",	black,	128,	3).setStyle(3, 3);
+	aspect("90 <-",		black,	255,	3).setStyle(3, 3);
+	aspect("90 ->",		black,	255,	1).setStyle(3, 3);
+	aspect("90 -->",	black,	128,	1).setStyle(3, 3);
+
+	aspect("[90] <--",	black,	128,	3);
+	aspect("[90] <-",	black,	255,	3);
+	aspect("[90] ->",	black,	255,	1);
+	aspect("[90] -->",	black,	128,	1);
+
+	aspect("120 <--",	red,	128,	3).setStyle(3, 3);
+	aspect("120 <-",	red,	255,	3).setStyle(3, 3);
+	aspect("120 ->",	red,	255,	1).setStyle(3, 3);
+	aspect("120 -->",	red,	128,	1).setStyle(3, 3);
+
+	aspect("[120] <--",	red,	128,	3);
+	aspect("[120] <-",	red,	255,	3);
+	aspect("[120] ->",	red,	255,	1);
+	aspect("[120] -->",	red,	128,	1);
+
+	aspect("180 <--",	black,	128,	3).setStyle(3, 3);
+	aspect("180 <-",	black,	255,	3).setStyle(3, 3);
+	aspect("180 ->",	black,	255,	1).setStyle(3, 3);
+	aspect("180 -->",	black,	128,	1).setStyle(3, 3);
+
+	aspect("[180] <--",	black,	128,	3);
+	aspect("[180] <-",	black,	255,	3);
+	aspect("[180] ->",	black,	255,	1);
+	aspect("[180] -->",	black,	128,	1);
+
+	Tags.Add("asp_cross", tag_cross, aspects);
+	Tags.Add("asp_app", tag_app, aspects);
+	Tags.Add("asp_app_exact", tag_app_exact, aspects);
+	Tags.Add("asp_sep_exact", tag_sep_exact, aspects);
+	Tags.Add("asp_sep", tag_sep, aspects);
+}

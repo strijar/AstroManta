@@ -1,0 +1,104 @@
+{
+	Division div;
+
+    div = Charts.addDivision("Ruling");
+
+    div.addFromSize(0, 30,		"Mars");
+    div.addFrom(30,				"Venus");
+    div.addFrom(60,				"Mercury");
+    div.addFrom(90, 			"Moon");
+    div.addFrom(120,			"Sun");
+    div.addFrom(150,			"Mercury");
+    div.addFrom(180,			"Venus");
+    div.addFrom(210,			"Mars");
+    div.addFrom(240,			"Jupiter");
+    div.addFrom(270,			"Saturn");
+    div.addFrom(300,			"Saturn");
+    div.addFrom(330,			"Jupiter");
+
+    div = Charts.addDivision("Ruling day");
+
+    div.addFromSize(0, 30,		"Mars");
+    div.addFrom(60,				"Mercury");
+    div.addFrom(90, 			"Moon");
+    div.addFrom(120,			"Sun");
+    div.addFrom(180,			"Venus");
+    div.addFrom(240,			"Jupiter");
+    div.addFrom(300,			"Saturn");
+
+    div = Charts.addDivision("Ruling night");
+
+    div.addFromSize(30, 30,		"Venus");
+    div.addFrom(90, 			"Moon");
+    div.addFrom(120,			"Sun");
+    div.addFrom(150,			"Mercury");
+    div.addFrom(210,			"Mars");
+    div.addFrom(270,			"Saturn");
+    div.addFrom(330,			"Jupiter");
+
+    div = Charts.addDivision("Falling");
+
+    div.addFromSize(0, 30,		"Venus");
+    div.addFrom(30,				"Mars");
+    div.addFrom(60,				"Jupiter");
+    div.addFrom(90,				"Saturn");
+    div.addFrom(120,			"Saturn");
+    div.addFrom(150,			"Jupiter");
+    div.addFrom(180,			"Mars");
+    div.addFrom(210,			"Venus");
+    div.addFrom(240,			"Mercury");
+    div.addFrom(270,			"Moon");
+    div.addFrom(300,			"Sun");
+    div.addFrom(330,			"Mercury");
+
+    div = Charts.addDivision("Exalted");
+
+    div.addFromSize(0, 30,	"Sun");
+    div.addFrom(30,			"Moon");
+    div.addFrom(90,			"Jupiter");
+    div.addFrom(150,			"Mercury");
+    div.addFrom(180,			"Saturn");
+    div.addFrom(270,			"Mars");
+    div.addFrom(330,			"Venus");
+
+    div = Charts.addDivision("Debilitated");
+
+    div.addFromSize(0, 30,		"Saturn");
+    div.addFrom(90,			"Mars");
+    div.addFrom(150,			"Venus");
+    div.addFrom(180,			"Sun");
+    div.addFrom(210,			"Moon");
+    div.addFrom(270,			"Jupiter");
+    div.addFrom(330,			"Mercury");
+    
+    div = Charts.addDivision("Sign");
+
+    div.addFromSize(0, 30,		"Ar");
+    div.addFrom(30,				"Ta");
+    div.addFrom(60,				"Ge");
+    div.addFrom(90,				"Cn");
+    div.addFrom(120,			"Le");
+    div.addFrom(150,			"Vi");
+    div.addFrom(180,			"Li");
+    div.addFrom(210,			"Sc");
+    div.addFrom(240,			"Sg");
+    div.addFrom(270,			"Cp");
+    div.addFrom(300,			"Aq");
+    div.addFrom(330,			"Pi");
+
+    div = Charts.addDivision("Element");
+
+    div.addFromSize(0, 30,		"Fire");
+    div.addFrom(30,				"Earth");
+    div.addFrom(60,				"Air");
+    div.addFrom(90,				"Water");
+    div.addFrom(120,			"Fire");
+    div.addFrom(150,			"Earth");
+    div.addFrom(180,			"Air");
+    div.addFrom(210,			"Water");
+    div.addFrom(240,			"Fire");
+    div.addFrom(270,			"Earth");
+    div.addFrom(300,			"Air");
+    div.addFrom(330,			"Water");
+    
+}

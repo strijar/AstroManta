@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Astro Manta</string>
+    <string name="sdcard_not_ready">SD карта не готова</string>
+    <string name="db_error">Проблема с базой данных</string>
+    
+    <string name="edit_natal">Edit natal</string>
+
+    <string name="info">Инфо</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="zone">Зона</string>
+    <string name="coord">Координаты</string>
+    <string name="place">Место</string>
+    <string name="houses">Дома</string>
+    <string name="points">Точки</string>
+    
+    <string name="eclipse_head">Затмение</string>
+    <string name="eclipse_type">Тип</string>
+    <string name="eclipse_find">Поиск</string>
+    
+    <string name="save">Сохранить</string>
+    <string name="load">Загрузить</string>
+    <string name="atlas">Атлас</string>
+    <string name="now">Сейчас</string>
+    <string name="edit">Редактировать</string>
+    
+    <string name="atlas_not_found">Не найдена база данных Атласа. Я попробую установить</string>
+    <string name="atlas_installed">База Атласа установлена</string>
+    <string name="atlas_not_installed">Проблема с установкой Базы Атласа</string>
+    <string name="atlas_incorrect">Формат атласа был изменен. Обновите файл atlas.db</string>
+    <string name="unknow_zone">Временная зона не известна</string>
+    
+    <string name="chart_save_group">Сохранить карту в группу</string>
+    <string name="chart_save_chart">Заместить карту</string>
+    <string name="chart_load">Загрузить карту</string>
+
+    <string name="add_group">Добавить группу</string>
+    <string name="rename_group">Переименовать группу</string>
+    <string name="delete_group">Удалить группу</string>
+    <string name="delete_chart">Удалить карту</string>
+
+    <string name="saved_ok">Сохранено успешно</string>
+    
+    <string name="pack_ok">"Установка завершена успешно"</string>
+    <string name="pack_connection">"Ошибка подключения"</string>
+    <string name="pack_content">"Ошбка чтения или записи пакета"</string>
+    
+    <string-array name="house">
+		<item>Equal</item>
+		<item>Alcabitius</item>
+		<item>Campanus</item>
+		<item>Horizontal</item>
+		<item>Koch</item>
+		<item>Morinus</item>
+		<item>Porphyry</item>
+		<item>Placidus</item>
+		<item>Regiomontanus</item>
+		<item>Polich/Page</item>
+		<item>Krusinski-Pisa-Goelzer</item>
+		<item>Equal Vehlow</item>
+		<item>Equal, whole sign</item>
+		<item>Axial rotation system</item>
+    </string-array>
+
+    <string-array name="eclipse_type">
+		<item>Лунное</item>
+		<item>Солнечное</item>
+		</string-array>
+
+    <string-array name="eclipse_find">
+		<item>Предыдущее</item>
+		<item>Следующее</item>
+    </string-array>
+
+    <string-array name="visible_type">
+		<item>Невидимая</item>
+		<item>Видимая</item>
+		<item>Только аспектируется</item>
+		<item>Только аспектирует</item>
+		<item>Аспектируется и аспектирует</item>
+	</string-array>
+    
+</resources>

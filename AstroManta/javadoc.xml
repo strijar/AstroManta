@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+
+        <javadoc
+	    encoding="UTF-8" charset="UTF-8" docencoding="UTF-8"
+    	    access="public"
+    	    author="true"
+    	    classpath="../AstroManta/libs/joda-time-2.8.1.jar:../AstroManta/libs/bsh-2.1.8.jar:../AstroManta/libs/swissephSWI-2.00.00-01.jar:libs/sqlite-jdbc-3.8.6.jar:libs/weblaf-complete-1.28.jar"
+    	    destdir="../AstroMantaAPI"
+    	    nodeprecated="false"
+    	    nodeprecatedlist="false"
+
+	    notree="true"
+	    noindex="true"
+	    nohelp="true"
+	    nonavbar="true"
+
+    	    source="1.7"
+    	    splitindex="false"
+    	    use="true"
+    	    version="true">
+
+	    <fileset dir="src/ru/strijar/astro" defaultexcludes="yes">
+		<exclude name="DivisionItem*"/>
+	    </fileset>
+
+	    <fileset dir="src/ru/strijar/astromanta/android" defaultexcludes="yes">
+		<exclude name="Activity*"/>
+		<exclude name="Edit*"/>
+		<exclude name="DownloadFileFromURL*"/>
+
+		<exclude name="ChartDB*"/>
+		<exclude name="ViewPlanetVisitor*"/>
+		<exclude name="ViewSpotCollect*"/>
+		<exclude name="AstromantaWallpaper*"/>
+		<exclude name="listener/WallpaperListener*"/>
+	    </fileset>
+
+	    <fileset dir="../AstroMantaPC/src/ru/strijar/astromanta/pc" defaultexcludes="yes">
+		<exclude name="AstroApplet*"/>
+		<exclude name="ChartsModel*"/>
+		<exclude name="Dialog*"/>
+		<exclude name="EditPoints*"/>
+		<exclude name="Main*"/>
+
+		<exclude name="ChartDB*"/>
+		<exclude name="ViewPlanetVisitor*"/>
+		<exclude name="ViewSpotCollect*"/>
+	    </fileset>
+
+        </javadoc>
+    </target>
+</project>

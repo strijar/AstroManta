@@ -1,0 +1,208 @@
+import ru.strijar.astro.*;
+import ru.strijar.astro.listener.*;
+import ru.strijar.astromanta.android.*;
+import ru.strijar.astromanta.android.listener.*;
+import swisseph.SweConst;
+import android.util.Log;
+import android.graphics.Color;
+
+WallpaperClass() {
+	Integer		cx, cy, rx, ry;
+	ViewChart	view = ViewCharts.addViewEcliptic();
+	ChartNatal	chart = Charts.addNatal();
+	AspectTable	aspects = view.getAspectTable();
+	
+	Long		chartTime = 0;
+
+	void Zodiac() {
+		view.addSign("Ar", 0,	30,		"pic/aries.png");
+		view.addSign("Ta", 30,	60,		"pic/taurus.png");
+		view.addSign("Ge", 60, 	90,		"pic/gemini.png");
+		view.addSign("Cn", 90,	120,	"pic/cancer.png");
+		view.addSign("Le", 120,	150,	"pic/leo.png");
+		view.addSign("Vi", 150,	180,	"pic/virgo.png");
+		view.addSign("Li", 180,	210,	"pic/libra.png");
+		view.addSign("Sc", 210,	240,	"pic/scorpio.png");
+		view.addSign("Sg", 240,	270,	"pic/sagittarius.png");
+		view.addSign("Cp", 270,	300,	"pic/capricorn.png");
+		view.addSign("Aq", 300,	330,	"pic/aquarius.png");
+		view.addSign("Pi", 330,	0,		"pic/pisces.png");
+	
+		view.setSizeBlank(50);
+		view.setSizeChart(50);
+		view.setScale(1.5f);
+	}
+
+	void Septener() {
+		void insert(id, pic, color, name, category) {
+			p = chart.addSwissPlanet(id);
+
+			p.setName(name);
+			p.setCategory(category);
+
+			v = view.addPlanet(p, pic);
+
+			v.getPaintText().setColor(color, 255);
+			v.getPaint().setColor(color, 128);
+			v.setSize(5);
+		}
+
+		insert(SweConst.SE_SUN,		"pic/sun.png",		0xFF5000, 	"Sun",		"Shine");
+		insert(SweConst.SE_MOON,	"pic/moon.png",		0x008000, 	"Moon",		"Shine");
+		insert(SweConst.SE_MERCURY,	"pic/mercury.png",	0x00A0A0, 	"Mercury",	"Major");
+		insert(SweConst.SE_VENUS,	"pic/venus.png",	0x00B000, 	"Venus",	"Major");
+		insert(SweConst.SE_MARS,	"pic/mars.png", 	0xFF0000, 	"Mars",		"Major");
+		insert(SweConst.SE_JUPITER,	"pic/jupiter.png",	0x0000FF, 	"Jupiter",	"Minor");
+		insert(SweConst.SE_SATURN,	"pic/saturn.png",	0x000000, 	"Saturn",	"Minor");
+	}
+	
+	void Houses() {
+		void insert(id, name, color, w) {
+			Spot p = chart.addHouseCusp(id);
+
+			p.setName(name);
+			p.setCategory("House");
+
+			v = view.addInside(p);
+
+			v.getPaint().setColor(color, 128);
+			v.getPaint().setStrokeWidth(w);
+		
+			l = view.addOutsideInfo(p);
+			
+			l.setPaint(v.getPaint());
+			l.setSize(view.getSizeChart() * 2/3);
+			l.getPaintText().setColor(color, 255);
+		};
+	
+		insert(1,	"Asc", 	0x00B000, 3);
+		insert(2,	"II", 	0x555555, 1);
+		insert(3,	"III", 	0x555555, 1);
+		insert(4,	"Ic",	0xB00000, 2);
+		insert(5,	"V",	0x555555, 1);
+		insert(6,	"VI", 	0x555555, 1);
+		insert(7,	"Dsc",	0x00B000, 2);
+		insert(8,	"VIII", 0x555555, 1);
+		insert(9,	"IX", 	0x555555, 1);
+		insert(10,	"Mc", 	0xB00000, 3);
+		insert(11,	"XI", 	0x555555, 1);
+		insert(12,	"XII",	0x555555, 1);
+	}
+	
+	void Aspects() {
+	    AspectEcliptic          ecl = aspects.addEcliptic();
+        AspectEclipticOrbis     orbis = ecl.newOrbis(3.5);
+
+        orbis.addName(11,       "Sun");
+        orbis.addName(9.5,      "Moon");
+        orbis.addName(7,        "Mercury");
+        orbis.addName(7,        "Venus");
+        orbis.addName(8,        "Mars");
+        orbis.addName(9,        "Jupiter");
+
+        ecl.excludeCategory("Axis");
+        ecl.excludeCategory("House");
+        ecl.excludeName("NNode", "SNode");
+
+        AspectEclipticLon lon;
+
+        lon = ecl.addLon(0);
+        lon.setOrbis(orbis);
+        lon.addInfo("0");
+
+        lon = ecl.addLon(60);
+        lon.setOrbis(orbis);
+        lon.addInfo("60");
+
+        lon = ecl.addLon(90);
+        lon.setOrbis(orbis);
+        lon.addInfo("90");
+
+        lon = ecl.addLon(120);
+        lon.setOrbis(orbis);
+        lon.addInfo("120");
+
+        lon = ecl.addLon(180);
+        lon.setOrbis(orbis);
+        lon.addInfo("180");
+
+        aspect(info, color) {
+                v = view.addAspect(info);
+                p = v.getPaint();
+
+                p.setColor(color, 128);
+                p.setStrokeWidth(3);
+
+                return p;
+        }
+
+        Integer red = 0xFF0000;
+        Integer black = 0x000000;
+        Integer green = 0x00FF00;
+
+        aspect("0",		green);
+        aspect("60",    red);
+        aspect("90",    black);
+        aspect("120",   red);
+        aspect("180",   black);
+	}
+
+	ViewCharts.setBackground("pic/paper.png");
+
+	Zodiac();
+	Septener();
+	Houses();
+	Aspects();
+
+	chart.getMoment().now();	
+	chart.getMoment().setTimeZoneId("Europe/Moscow");
+	chart.getPlace().setLon(30.25f);
+	chart.getPlace().setLat(59.9167f);
+	
+	view.setStart(chart.getSpot("Asc"));
+	aspects.aspected(chart);
+	Charts.calc();
+	aspects.calc();
+
+	void onChanged(int w, int h) {
+		cx = w/2;
+		cy = h/2;
+		
+		int r;
+		
+		if (cx > cy) {
+			r = cx * 5 / 4;
+			rx = r/2;
+			ry = r/2 * w/h;
+		} else {
+			r = cy * 5 / 4;
+			rx = r/2 * h/w;
+			ry = r/2;
+		}
+
+		view.setCenter(cx, cy);
+		view.setRadius(r);
+	}
+	
+	void onUpdate() {
+		Long 	time = System.currentTimeMillis();
+		Double	t = time / 60000.0 * 3.1415;
+		Double	x = cx + Math.sin(t) * rx;
+		Double	y = cy + Math.cos(t) * ry;
+
+		view.setCenter(x.intValue(), y.intValue());
+		
+		if (time - chartTime > 60000) {
+			chart.getMoment().now();
+			chart.calc();
+			aspects.calc();
+			chartTime = time;
+		}
+	}
+
+	return this;
+
+}
+
+wallpaper = WallpaperClass();
+ViewCharts.setListener(wallpaper);

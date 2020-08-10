@@ -1,0 +1,26 @@
+import ru.strijar.astro.*;
+import ru.strijar.astro.listener.*;
+import ru.strijar.astromanta.pc.*;
+import ru.strijar.astromanta.pc.gui.*;
+
+Sys.lib("init/workspace.bsh");
+Sys.i18n("i18n.json");
+
+workspace.buildMenuBar();
+
+Sys.loadBitmap("Logo", "pic/logo.png");
+
+args = new Object[]{ 
+	Sys.getBitmapSrc("pic/logo.png"),
+	i18n.get("To get started select a workspace into <b>Menu</b>")
+};
+
+Info.out(
+	String.format(
+		"<center>" +
+		"<img src='%s'>" +
+		"<p><b>AstroManta v5.1</b><br>" +
+		"</p><p>%s</p></center>",
+		args
+	)
+);

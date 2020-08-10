@@ -1,0 +1,15 @@
+{
+	"ru": {
+		"Settings"					: "Настройки",
+		"Zodiac direction CW/CCW"	: "Направление Зодиака по/против",
+		"Zodiac simbols in info"	: "Символы Зодиака в инфо",
+		"Default place"				: "Текущее местоположение",
+		"Hide/Show"					: "Скрыть/Показать",
+
+		"Screen"					: "Экран",
+		"Scale up"					: "Крупней",
+		"Scale down"				: "Мельче",
+		"Screenshot"				: "Снимок экрана",
+		"Screenshot saved"			: "Снимок экрана сохранен",
+	}
+}

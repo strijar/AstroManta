@@ -1,0 +1,17 @@
+{
+	"ru" : {
+		"Synastry"				: "Синастрия",
+		"Left chart"			: "Левая карта",
+		"Right chart"			: "Правая карта",
+		"Central chart"			: "Центральная карта",
+		"Both charts" 			: "Обе карты",
+		"Average Davison chart"	: "Средняя карта Девисона",
+		"Start left"			: "Начало с левой",
+		"Start right"			: "Начало с правой",
+		"Edit"					: "Редактировать",
+		"Load"					: "Загрузить",
+		"Save"					: "Сохранить",
+		"Chart note"			: "Примечание к карте",
+		"Chart start Aries/Asc"	: "Карта от Овна/ASC"
+    }
+}

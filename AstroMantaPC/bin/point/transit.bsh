@@ -1,0 +1,9 @@
+Sys.lib("point/septener.bsh");
+Sys.lib("point/trans_saturn.bsh");
+Sys.lib("point/moon_node.bsh");
+
+void PointTransit(Chart chart, ViewChart view) {
+	PointSeptener(chart, view);
+	PointTransSaturn(chart, view);
+	PointMoonNode(chart, view);
+}

@@ -1,0 +1,32 @@
+Sys.lib("point/oposite.bsh");
+
+import swisseph.SweConst;
+
+void PointVertex(Chart chart, ViewChart view) {
+	// Vx
+
+	vx = chart.addAxis(SweConst.SE_VERTEX);
+
+	vx.setName("Vx");
+	vx.setCategory("Axis");
+
+	v = view.addInside(vx, "pic/vx.png");
+
+	v.getPaint().setColor(0x0000B0, 128);
+	v.getPaint().setStrokeWidth(3);
+
+	// AVx
+
+	avx = chart.addCalcSpot();
+	
+	avx.setName("AVx");
+	avx.setCategory("Axis");
+	avx.setBag(object());
+	avx.getBag().no_info = true;
+	avx.setCalcListener(CalcOposite, vx.getEcliptic());
+
+	v = view.addInside(avx);
+
+	v.getPaint().setColor(0x0000B0, 128);
+	v.getPaint().setStrokeWidth(2);
+}

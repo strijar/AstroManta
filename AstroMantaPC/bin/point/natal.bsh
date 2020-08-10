@@ -1,0 +1,14 @@
+Sys.lib("point/septener.bsh");
+Sys.lib("point/trans_saturn.bsh");
+Sys.lib("point/moon_node.bsh");
+Sys.lib("point/axis.bsh");
+Sys.lib("point/house.bsh");
+
+void PointNatal(Chart chart, ViewChart view) {
+	PointSeptener(chart, view);
+	PointTransSaturn(chart, view);
+	PointMoonNode(chart, view);
+	PointAxis(chart, view);
+	PointHouse(chart, view);
+	PointHouseZone(chart, view);
+}

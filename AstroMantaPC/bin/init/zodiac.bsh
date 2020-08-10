@@ -1,0 +1,31 @@
+Zodiac() {
+	view = ViewCharts.addViewEcliptic();
+	
+	void insert(name, from, to, pic) {
+		v = view.addSign(name, from, to, pic);
+		
+		String src = Sys.getBitmapSrc(pic);
+		
+		view.addSignLabel("<img src=" + src + ">&nbsp;</td><td>"); 
+	}
+
+	insert("Ar", 0,		30,		"pic/aries.png");
+	insert("Ta", 30,	60,		"pic/taurus.png");
+	insert("Ge", 60, 	90,		"pic/gemini.png");
+	insert("Cn", 90,	120,	"pic/cancer.png");
+	insert("Le", 120,	150,	"pic/leo.png");
+	insert("Vi", 150,	180,	"pic/virgo.png");
+	insert("Li", 180,	210,	"pic/libra.png");
+	insert("Sc", 210,	240,	"pic/scorpio.png");
+	insert("Sg", 240,	270,	"pic/sagittarius.png");
+	insert("Cp", 270,	300,	"pic/capricorn.png");
+	insert("Aq", 300,	330,	"pic/aquarius.png");
+	insert("Pi", 330,	0,		"pic/pisces.png");
+
+	view.setDir(Sys.prefGet("cw", false));
+
+	view.setSizeBlank(50);
+	view.setSizeChart(50);
+
+	return view;
+}

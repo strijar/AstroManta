@@ -1,0 +1,9 @@
+CalcOposite = new SpotCalcListener() {
+	void Calc(self, arg) {
+		lon = arg.getLon();
+		speed = arg.getLonSpeed();
+
+		self.getEcliptic().setLon(lon + 180);
+		self.getEcliptic().setLonSpeed(speed);
+	}
+};

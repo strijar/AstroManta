@@ -1,0 +1,113 @@
+Sys.lib("init/settings.bsh");
+
+import bsh.*;
+
+i18n.add("ru", "Workspace",					"Рабочий стол");
+
+i18n.add("ru", "Rotate step",				"Шаг вращения карты");
+i18n.add("ru", "Minute",					"Минута");
+i18n.add("ru", "Hour",						"Час");
+i18n.add("ru", "Day",						"День");
+i18n.add("ru", "Month",						"Месяц");
+i18n.add("ru", "Rotate step: min",			"Шаг вращения: минута");
+i18n.add("ru", "Rotate step: hour",			"Шаг вращения: час");
+i18n.add("ru", "Rotate step: day",			"Шаг вращения: день");
+i18n.add("ru", "Rotate step: month",		"Шаг вращения: месяц");
+
+workspaceClass() {
+	current = null;
+	items = new ArrayList();
+	Integer rotate_step = Sys.prefGet("rotate_step", 60*60);
+
+	void Register(item) {
+		items.add(item);
+	}
+
+	void Current(item) {
+		current = item;
+		buildMenuBar();
+	}
+
+	void RotateStep(step, msg) {
+		rotate_step = step;
+		Sys.prefSet("rotate_step", step);
+		Sys.toast(i18n.get(msg));
+	}
+
+	void onString(name) {
+		Sys.Download(name);
+	};
+
+	ITEM_STEP_MIN		= 1;
+	ITEM_STEP_HOUR		= 2;
+	ITEM_STEP_DAY		= 3;
+	ITEM_STEP_MONTH		= 4;
+
+	public void actionPerformed(e) {
+		AstroMenuItem item = e.getSource();
+		
+		switch (item.getItemId()) {
+			case ITEM_STEP_MIN:
+				RotateStep(60, "Rotate step: min");
+				break;
+
+			case ITEM_STEP_HOUR:
+				RotateStep(60*60, "Rotate step: hour");
+				break;
+				
+			case ITEM_STEP_DAY:
+				RotateStep(60*60*24, "Rotate step: day");
+				break;
+				
+			case ITEM_STEP_MONTH:
+				RotateStep(60*60*24*30, "Rotate step: month");
+				break;
+		}
+	};
+
+	void onPrepareAddMenu(menu) {
+		sub = menu.addMenu(i18n.get("Rotate step"));
+
+		sub.addItem(ITEM_STEP_MIN, i18n.get("Minute")).addActionListener(this);
+		sub.addItem(ITEM_STEP_HOUR, i18n.get("Hour")).addActionListener(this);
+		sub.addItem(ITEM_STEP_DAY, i18n.get("Day")).addActionListener(this);
+		sub.addItem(ITEM_STEP_MONTH, i18n.get("Month")).addActionListener(this);
+	}
+
+	void buildMenuBar() {
+		AstroMenuBar menu = Sys.menuBar();
+	
+		menu.removeAll();
+		
+		sub = menu.addMenu(i18n.get("Workspace"));
+	
+		iterator = items.iterator();
+			
+		while (iterator.hasNext()) {
+			item = iterator.next();
+
+			item.onPrepareWorkspaceMenu(sub);
+		}
+
+		if (current != null) {
+			sub = menu.addMenu(i18n.get("Main"));
+	
+			current.onPrepareMainMenu(sub);
+			onPrepareAddMenu(sub);
+		}
+
+		settings.onPrepareOptionsMenu(menu);
+
+		menu.revalidate();
+	}
+	
+	return this;
+}
+
+workspace = workspaceClass();
+
+for (file : Sys.dir("workspace").keySet()) {
+	if (file.endsWith(".bsh")) {
+    	Sys.run("workspace/" + file);
+    }
+}

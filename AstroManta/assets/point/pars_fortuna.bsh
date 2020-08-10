@@ -1,0 +1,33 @@
+void PointParsFortuna(Chart chart, ViewChart view) {
+	Spot pars = chart.addCalcSpot();
+
+	pars.setName("Fortuna");
+	pars.setCategory("Fictitious");
+
+	SpotCalcListener calc = new SpotCalcListener() {
+		Coord	asc = chart.getSpot("Asc").getEcliptic();
+		Coord	moon = chart.getSpot("Moon").getEcliptic();
+		Coord	sun = chart.getSpot("Sun").getEcliptic();
+
+		void Calc(self, arg) {
+			Double res;
+		
+			if (asc.angle(sun) < 0) {
+            	res = asc.getLon() + moon.getLon() - sun.getLon();
+            } else {
+            	res = asc.getLon() - moon.getLon() + sun.getLon();
+            }
+
+            self.getEcliptic().setLon(res);
+		}
+	};
+
+	pars.setCalcListener(calc);
+
+	v = view.addPlanet(pars, "pic/pars_fortuna.png");
+	
+	v.getPaintText().setColor(0x808080, 255);
+	v.getPaint().setColor(0x808080, 128);
+
+	v.setSize(5);
+}

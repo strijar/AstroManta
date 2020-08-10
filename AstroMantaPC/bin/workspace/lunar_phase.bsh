@@ -1,0 +1,253 @@
+Sys.lib("init/zodiac.bsh");
+Sys.lib("point/natal.bsh");
+
+Sys.lib("info/moment.bsh");
+Sys.lib("info/point.bsh");
+Sys.lib("info/aspect.bsh");
+
+Sys.lib("aspect/classic.bsh");
+Sys.lib("aspect/equator.bsh");
+
+Sys.i18n("workspace/lunar_phase.json");
+
+lunarPhaseClass() {
+	String		name = i18n.get("Lunar phase");
+	ViewChart	view;
+	ChartNatal	natal;
+	AspectTable	aspects;
+	String		info;
+	
+	Integer		pen_x;
+	Integer		pen_y;
+
+	Runnable	InitTask;
+	Object[]	signs;
+
+	AstroWorker UpdateWorker = new AstroWorker() {
+		void doInBackground() {
+    		Charts.calc();
+			FullInfo();
+		};
+		
+		void done() {
+    		ViewCharts.repaint();
+    		Info.out(info);
+		};
+	};
+
+	Runnable InitTask = new Runnable() {
+		void run() {
+			Charts.clear();
+			ViewCharts.clear();
+			Tags.clear();
+			
+			Init();
+			setScale(Sys.prefGet("scale", 1.0f));
+			workspace.Current(this);
+		}
+	};
+
+	void onPrepareWorkspaceMenu(sub) {
+		JMenuItem item = new JMenuItem(name);
+		
+		item.addActionListener(new ActionListener() {
+			 public void actionPerformed(ActionEvent e) {
+			 	SwingUtilities.invokeLater(InitTask);
+			 }
+		});
+
+		sub.add(item);
+	};
+
+	ITEM_EDIT			= 1;
+	ITEM_LOAD			= 2;
+	ITEM_SAVE			= 3;
+	ITEM_NOTE 			= 4;
+	ITEM_START_CHART 	= 5;
+
+	public void actionPerformed(e) {
+		AstroMenuItem item = e.getSource();
+		
+		switch (item.getItemId()) {
+			case ITEM_EDIT:
+				Sys.edit(natal, this);
+				break;
+				
+			case ITEM_LOAD:
+				Sys.load(natal, this);
+				break;
+
+			case ITEM_SAVE:
+				Sys.save(natal);
+				break;
+
+			case ITEM_NOTE:
+				String note = natal.getVar("note");
+				
+				note = Sys.getString(i18n.get("Chart note"), note);
+				
+				if (note != null) {
+					natal.setVar("note", note);
+				}
+				break;
+			
+			case ITEM_START_CHART:
+				start = view.getStart();
+	
+				if (start != null) {
+					start = null;
+					Sys.prefSet("start_asc", false);	
+				} else {
+					start = natal.getSpot("Asc");
+					Sys.prefSet("start_asc", true);	
+				}
+				view.setStart(start);
+				ViewCharts.repaint();
+				break;
+		}
+	};
+	
+	void onPrepareMainMenu(sub) {
+		sub.addItem(ITEM_EDIT, i18n.get("Edit")).addActionListener(this);
+		sub.addItem(ITEM_LOAD, i18n.get("Load")).addActionListener(this);
+		sub.addItem(ITEM_SAVE, i18n.get("Save")).addActionListener(this);
+		sub.addItem(ITEM_NOTE, i18n.get("Chart note")).addActionListener(this);
+	};
+
+	void onPrepareSettingsMenu(sub) {
+		sub.addItem(ITEM_START_CHART, i18n.get("Chart start Aries/Asc")).addActionListener(this);
+	};
+
+	MouseInputAdapter mouse = new MouseInputAdapter() {
+		public void mousePressed(MouseEvent e) {
+			pen_x = e.getX();
+			pen_y = e.getY();
+		};
+	
+		public void mouseDragged(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+			
+			pen_step = ViewCharts.getHeight() / 10;
+			delta = pen_x - x;
+
+			if (Math.abs(delta) > pen_step) {
+				natal.getMoment().rotate(delta > 0 ? workspace.rotate_step : -workspace.rotate_step);
+
+				Sys.execute(UpdateWorker);
+
+				pen_x = x;
+				pen_y = y;
+			}
+    	};
+    	
+    	public void mouseReleased(MouseEvent e) {
+    		Sys.prefSet("lunar_phase_store", natal.store());
+    	};
+    };
+
+	void onCalc(Object arg) {
+		aspects.calc();
+	};
+
+	void Resize() {
+		view.setCenter(ViewCharts.getWidth()/2, ViewCharts.getHeight()/2);
+		
+		Integer r = Math.min(ViewCharts.getHeight(), ViewCharts.getWidth()) / 2;
+		
+		view.setRadius(r - view.getSizeChart());
+	}
+
+	void onEdit(Chart chart) {
+		Sys.execute(UpdateWorker);
+		Sys.prefSet("lunar_phase_store", natal.store());
+	};
+
+	void Init() {
+		view = Zodiac();
+
+		Resize();
+
+		if (Sys.prefGet("sign_pic", false))
+			signs = view.getSignLabels();
+
+		natal = Charts.addAngle();
+
+		PointNatal(natal, view);
+
+		SwissPlanet sun = natal.getSpot("Sun");
+		SwissPlanet moon = natal.getSpot("Moon");
+
+		natal.moved(sun, moon);
+		natal.addTo(0);
+		natal.addTo(90);
+		natal.addTo(180);
+		natal.addTo(270);
+
+		natal.setBackward(true);
+
+		natal.getMoment().now();
+		natal.load(Sys.prefGet("lunar_phase_store", ""));
+
+		if (Sys.prefGet("start_asc", true)) {
+			view.setStart(natal.getSpot("Asc"));
+		}
+
+		aspects = view.getAspectTable();
+
+		AspectClassic(view);
+		AspectEquator(view);
+		aspects.aspected(natal);
+
+		ViewCharts.addComponentListener(this);
+		ViewCharts.addMouseMotionListener(mouse);
+		ViewCharts.addMouseListener(mouse);
+
+		Charts.setAfterCalcListener(this, object());
+
+    	Charts.calc();
+		FullInfo();
+    	Info.out(info);
+	};
+
+	void FullInfo() {
+    	info = "";
+
+    	if (natal.getInfo() != null) {
+			info = "<b>" + natal.getInfo() + "</b><br>";
+    	}
+
+    	info += "<b>" + InfoMoment(natal.getMoment()) + "</b><br>";
+    	info += InfoMoment(natal.getCalcMoment());
+    	info += InfoPoint(natal, signs);
+    	info += "<hr>" + InfoAspect(aspects);
+	};
+
+	public void componentResized(ComponentEvent e) {
+		Resize();
+		ViewCharts.repaint();
+    };
+
+	void setScale(Float scale) {
+		view.setScale(scale);
+		ViewCharts.repaint();
+	}
+
+	void InfoSigns(on) {
+		signs = on ? view.getSignLabels() : null;
+		Sys.execute(UpdateWorker);
+	}
+
+	void Update() {
+		Sys.execute(UpdateWorker);
+	}
+
+	void ZodiacDir(cw) {
+		view.setDir(cw);
+		ViewCharts.repaint();
+	}
+
+	return this;
+}
+
+workspace.Register(lunarPhaseClass());

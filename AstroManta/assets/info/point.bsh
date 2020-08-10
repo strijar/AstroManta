@@ -1,0 +1,42 @@
+String InfoPointPic(String name) {
+	String pic = Sys.getBitmapSrc(name);
+
+	if (pic != null) {
+		return "<img src=astromanta://" + pic + " height=50%>";
+	}
+	
+	return name;
+}
+
+String InfoPoint(Chart chart, Object[] sign) {
+	String str = "<table>";
+	iterator = chart.getSpots().iterator();
+
+	while (iterator.hasNext()) {
+		Spot point = iterator.next();
+		Object bag = point.getBag();
+
+		if (point.getVisible() && (bag == null) || (bag != null && bag.no_info != true) ) { 
+			name = point.getName();
+			ecl = point.getEcliptic();
+
+			str += "<tr><td>" + InfoPointPic(name) + "</td><td>";
+			
+			if (sign != null) {
+		    	str += ecl.getLonStr(sign);
+		    } else {
+		    	str += ecl.getLonStr();
+		    }
+		    
+		    speed = ecl.getLonSpeed();
+		   
+			if (speed < 0) {
+				str += "R";
+			}
+			
+			str += "</td></tr>";
+		}
+	}
+	
+	return str + "</table>";
+}

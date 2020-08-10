@@ -1,0 +1,51 @@
+Sys.lib("info/point.bsh");
+
+String InfoPointSpeed(Chart chart, Object[] sign) {
+	String str = "<table>";
+	iterator = chart.getSpots().iterator();
+
+	while (iterator.hasNext()) {
+		Spot point = iterator.next();
+		Object bag = point.getBag();
+
+		if (point.getVisible() && (bag == null) || (bag != null && bag.no_info != true) ) { 
+			name = point.name;
+			ecl = point.ecliptic;
+
+			str += "<tr><td>" + InfoPointPic(name) + "</td><td>";
+			
+			if (sign != null) {
+		    	str += ecl.getLonStr(sign);
+		    } else {
+		    	str += ecl.getLonStr();
+		    }
+		    
+		    speed = ecl.getLonSpeed();
+		   
+			if (speed < 0) {
+				str += "R";
+			}
+			
+			Double avr = 0.0;
+			
+			switch (name) {
+				case "Sun"		: avr = 0.9856;	break;
+        		case "Moon"		: avr = 13.176; break;
+        		case "Mercury"	: avr = 0.9856; break;
+        		case "Venus"	: avr = 0.9856; break;
+        		case "Mars"		: avr = 0.524; break;
+        		case "Jupiter"	: avr = 0.0829; break;
+        		case "Saturn"	: avr = 0.0335; break;
+        	}
+
+			if (avr != 0.0) {
+				avr = speed/avr * 100;
+				str += String.format("</td><td align='right'>%d%%", avr.intValue());
+			}
+			
+			str += "</td></tr>";
+		}
+	}
+	
+	return str + "</table>";
+}

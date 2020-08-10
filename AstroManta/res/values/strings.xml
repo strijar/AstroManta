@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Astro Manta</string>
+    <string name="sdcard_not_ready">SD card not ready</string>
+    <string name="db_error">Problem with the database</string>
+    
+    <string name="edit_natal">Edit natal</string>
+    
+    <string name="info">Info</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="zone">Zone</string>
+    <string name="coord">Coord</string>
+    <string name="place">Place</string>
+    <string name="houses">Houses</string>
+    <string name="points">Points</string>
+    
+    <string name="eclipse_head">Eclipse</string>
+    <string name="eclipse_type">Type</string>
+    <string name="eclipse_find">Find</string>
+    
+    <string name="save">Save</string>
+    <string name="load">Load</string>
+    <string name="atlas">Atlas</string>
+    <string name="now">Now</string>
+    <string name="edit">Edit</string>
+    
+    <string name="atlas_not_found">Atlas Database not found. I will try to install</string>
+    <string name="atlas_installed">Atlas Database is installed</string>
+    <string name="atlas_not_installed">The problem with the installation Atlas Database</string>
+    <string name="atlas_incorrect">Atlas format was changed. Update atlas.db</string>
+    <string name="unknow_zone">Time zone is not known</string>
+    
+    <string name="chart_save_group">Save chart info group</string>
+    <string name="chart_save_chart">Raplace chart</string>
+    <string name="chart_load">Load chart</string>
+    
+    <string name="add_group">Add group</string>
+    <string name="rename_group">Rename group</string>
+    <string name="delete_group">Delete group</string>
+    <string name="delete_chart">Delete chart</string>
+
+    <string name="saved_ok">Saved successfully</string>
+
+    <string name="pack_ok">"Install complete"</string>
+    <string name="pack_connection">"Connection error"</string>
+    <string name="pack_content">"Packet load or save error"</string>
+    
+    <string-array name="house">
+		<item>Equal</item>
+		<item>Alcabitius</item>
+		<item>Campanus</item>
+		<item>Horizontal</item>
+		<item>Koch</item>
+		<item>Morinus</item>
+		<item>Porphyry</item>
+		<item>Placidus</item>
+		<item>Regiomontanus</item>
+		<item>Polich/Page</item>
+		<item>Krusinski-Pisa-Goelzer</item>
+		<item>Equal Vehlow</item>
+		<item>Equal, whole sign</item>
+		<item>Axial rotation system</item>
+    </string-array>
+
+    <string-array name="eclipse_type">
+		<item>Lunar</item>
+		<item>Solar</item>
+	</string-array>
+
+    <string-array name="eclipse_find">
+		<item>Backward</item>
+		<item>Forward</item>
+    </string-array>
+    
+    <string-array name="visible_type">
+		<item>Invisible</item>
+		<item>Visible</item>
+		<item>Aspected only</item>
+		<item>Aspecting only</item>
+		<item>Aspected and aspecting</item>
+	</string-array>
+    
+</resources>

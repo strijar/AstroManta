@@ -1,0 +1,104 @@
+import javax.swing.border.EmptyBorder;
+
+i18n.add("ru", "Hide/Show",	"Скрыть/Показать");
+
+TagsClass() {
+	items = new ArrayList();
+
+	Item(name, info, obj) {
+		this.name = name;
+		this.info = info;
+		this.val = Sys.prefGet(name, true);
+		this.root = new ArrayList();
+	
+		void Add(item) {
+			root.add(item);
+			item.visibleTag(val, info);
+		};
+		
+		if (obj != null) { 
+			Add(obj);
+		}
+				
+		void Change(on) {
+			val = on;
+			Sys.prefSet(name, on);
+
+			iterator = root.iterator();
+
+			while (iterator.hasNext()) {
+				item = iterator.next();
+			
+				item.visibleTag(on, info);
+			}
+
+			workspace.current.Update();
+		};
+
+		return this;
+	};
+
+	void clear() {
+		items.clear();
+	}
+
+	void Add(name, info, root) {
+		iterator = items.iterator();
+
+		while (iterator.hasNext()) {
+			item = iterator.next();
+			
+			if (item.info == info) {
+				item.Add(root);
+				return;
+			}
+		}
+
+		item = Item(name, info, root);
+		items.add(item);
+	};
+
+	ItemListener ItemClick = new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+			AstroCheckBox	box = e.getSource();
+			Boolean 		on = box.isSelected();
+
+			box.getItemId().Change(on);
+		}
+	};
+
+	void Dialog() {
+		JDialog dialog = new JDialog();
+		
+		dialog.setTitle(i18n.get("Hide/Show"));
+	
+		iterator = items.iterator();
+		JPanel panel = new JPanel();
+
+		panel.setBorder(new EmptyBorder(12, 12, 12, 12));
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));			
+
+		while (iterator.hasNext()) {
+			item = iterator.next();
+
+			AstroCheckBox box = new AstroCheckBox(item, item.info);
+			
+			box.setSelected(item.val);
+			box.addItemListener(ItemClick);
+			
+			panel.add(box);
+		}
+
+		dialog.setModal(true);
+		dialog.setResizable(false);
+		dialog.add(panel, BorderLayout.CENTER);
+		dialog.pack();
+		dialog.setLocationRelativeTo(Sys);
+		dialog.setVisible(true);
+	};
+
+	return this;
+};
+
+Tags = TagsClass();
+ 

@@ -1,0 +1,57 @@
+void PointNewMoon(Chart chart, ViewChart view) {
+
+	SpotCalcListener calc = new SpotCalcListener() {
+		Spot	moon = chart.getSpot("Moon");
+		Transit	transit = moon.transitAngle(chart.getSpot("Sun"));
+		Date	moment = chart.getCalcMoment();
+
+		void Calc(self, arg) {
+			Double jd = transit.nextJD(moment.getJD(), true);
+	
+			moon.calc(jd, self.getEcliptic());
+		}
+	};
+
+	Spot lunation = chart.addCalcSpot();
+
+	lunation.setName("NewMoon");
+	lunation.setCategory("Fictitious");
+	lunation.setCalcListener(calc);
+
+	v = view.addPlanet(lunation, "pic/new_moon.png");
+	
+	v.getPaintText().setColor(0x008000, 255);
+	v.getPaint().setColor(0x008000, 128);
+
+	v.setSize(5);
+}
+
+void PointFullMoon(Chart chart, ViewChart view) {
+
+	SpotCalcListener calc = new SpotCalcListener() {
+		Spot	moon = chart.getSpot("Moon");
+		Transit	transit = moon.transitAngle(chart.getSpot("Sun"));
+		Date	moment = chart.getCalcMoment();
+
+		transit.setValue(180.0);
+
+		void Calc(self, arg) {
+			Double jd = transit.nextJD(moment.getJD(), true);
+	
+			moon.calc(jd, self.getEcliptic());
+		}
+	};
+
+	Spot lunation = chart.addCalcSpot();
+
+	lunation.setName("FullMoon");
+	lunation.setCategory("Fictitious");
+	lunation.setCalcListener(calc);
+
+	v = view.addPlanet(lunation, "pic/full_moon.png");
+	
+	v.getPaintText().setColor(0x008000, 255);
+	v.getPaint().setColor(0x008000, 128);
+
+	v.setSize(5);
+}

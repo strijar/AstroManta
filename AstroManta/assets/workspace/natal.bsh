@@ -1,0 +1,314 @@
+import android.view.MotionEvent;
+
+Sys.lib("init/zodiac.bsh");
+Sys.lib("point/natal.bsh");
+Sys.lib("aspect/classic.bsh");
+Sys.lib("aspect/equator.bsh");
+Sys.lib("info/moment.bsh");
+Sys.lib("info/point.bsh");
+Sys.lib("info/aspect.bsh");
+
+i18n.add("ru", "Natal",						"Натал");
+i18n.add("ru", "Rotate",					"Вращение карты");
+i18n.add("ru", "Rotate...",					"Вращение карты...");
+i18n.add("ru", "Edit", 						"Редактировать");
+i18n.add("ru", "Load", 						"Загрузить");
+i18n.add("ru", "Save", 						"Сохранить");
+i18n.add("ru", "Chart note",				"Примечание к карте");
+
+i18n.add("ru", "Chart start Aries/Asc",		"Карта от Овна/ASC");
+
+i18n.add("ru", "Visible",					"Видимая");
+i18n.add("ru", "Aspected only",				"Только аспектируется");
+i18n.add("ru", "Aspecting only",			"Только аспектирует");
+i18n.add("ru", "Aspected and aspecting",	"Аспектируется и аспектирует");
+
+natalClass() {
+	String		name = i18n.get("Natal");
+	ViewChart	view;
+	ChartNatal	natal;
+	AspectTable	aspects;
+	Spot		near;
+
+	Integer		pen_x;
+	Integer		pen_y;
+	
+	Runnable	InitTask;
+	Runnable	FullInfoTask;
+	Runnable	CalcTask;
+	Runnable	FullUpdateTask;
+	Object[]	signs;
+
+	Runnable InitTask = new Runnable() {
+		void run() {
+			Info.setVisible(false, ViewCharts.getWidth()/2);
+
+			Info.clear();
+			Charts.clear();
+			ViewCharts.clear();
+			Tags.clear();
+			
+			Init();
+			setScale(Sys.prefGet("scale", 1.0f));
+
+			workspace.Current(this);
+		}
+	};
+
+	void onPrepareWorkspaceMenu(menu) {
+		menu.add(name).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+			boolean onMenuItemClick(MenuItem item) {
+				Sys.asyncTaskWait(InitTask);
+				return true;
+			};
+		});
+	};
+
+	void onCalc(Object arg) {
+		aspects.calc();
+	};
+
+	void onEdit(chart) {
+		Sys.prefSet("natal_store", natal.store());	
+		Sys.asyncTask(FullUpdateTask);
+	};
+
+	void onString(str) {
+		natal.setVar("note", str);
+	};
+
+	ITEM_EDIT 			= 1;
+	ITEM_LOAD 			= 2;
+	ITEM_SAVE 			= 3;
+	ITEM_NOTE 			= 4;
+	ITEM_START_CHART 	= 5;
+
+	OnMenuItemClickListener MenuClick = new OnMenuItemClickListener() {
+		boolean onMenuItemClick(MenuItem item) {
+			switch (item.getItemId()) {
+				case ITEM_EDIT:
+					Sys.edit(natal, this);
+					break;
+
+				case ITEM_LOAD:
+					Sys.load(natal, this);
+					break;
+				
+				case ITEM_SAVE:
+					Sys.save(natal);
+					break;
+					
+				case ITEM_NOTE:
+					Sys.getString(i18n.get("Chart note"), natal.getVar("note"), this);
+					break;
+			
+				case ITEM_START_CHART:
+					start = view.getStart();
+	
+					if (start != null) {
+						start = null;
+						Sys.prefSet("start_asc", false);	
+					} else {
+						start = natal.getSpot("Asc");
+						Sys.prefSet("start_asc", true);	
+					}
+					view.setStart(start);
+					ViewCharts.repaint();
+					break;
+			}
+			return true;
+		}
+	};
+
+	void onPrepareOptionsMenu(menu) {
+		menu.add(Menu.NONE, ITEM_EDIT, Menu.NONE, i18n.get("Edit")).setOnMenuItemClickListener(MenuClick);
+		menu.add(Menu.NONE, ITEM_LOAD, Menu.NONE, i18n.get("Load")).setOnMenuItemClickListener(MenuClick);
+		menu.add(Menu.NONE, ITEM_SAVE, Menu.NONE, i18n.get("Save")).setOnMenuItemClickListener(MenuClick);
+		menu.add(Menu.NONE, ITEM_NOTE, Menu.NONE, i18n.get("Chart note")).setOnMenuItemClickListener(MenuClick);
+	};
+	
+	void onPrepareSettingsMenu(menu) {
+		menu.add(Menu.NONE, ITEM_START_CHART, Menu.NONE, i18n.get("Chart start Aries/Asc")).setOnMenuItemClickListener(MenuClick);
+	};
+
+	Runnable FullUpdateTask = new Runnable() {
+		void run() {
+			CalcTask.run();
+			FullInfoTask.run();
+		}
+	};
+
+	Runnable CalcTask = new Runnable() {
+		void run() {
+			Charts.calc();
+			ViewCharts.repaint();
+		}
+	};
+
+	Runnable FullInfoTask = new Runnable() {
+		void run() {
+			String str = "";
+			
+			if (natal.getInfo() != null) {
+				str = "<b>" + natal.getInfo() + "</b><br>";
+			}
+
+			str += "<b>" + InfoMoment(natal.getMoment()) + "</b>";
+			str += InfoPoint(natal, signs);
+			str += "<hr>" + InfoAspect(aspects);
+
+			Info.out("<pre>" + str + "</pre>");			
+		}
+	};
+	
+	void Init() {
+		view = Zodiac();
+
+		int x = ViewCharts.getWidth()/2;
+		int y = ViewCharts.getHeight()/2;
+
+		view.setCenter(x, y);
+		view.setRadius(ViewCharts.getHeight()/2 - 2);
+
+		natal = Charts.addNatal();
+
+		PointNatal(natal, view);
+
+		natal.getPlace().setInfo(Sys.prefGet("place_name", ""));
+		natal.getPlace().setLat(Sys.prefGet("place_lat", 0.0f));
+		natal.getPlace().setLon(Sys.prefGet("place_lon", 0.0f));
+
+		natal.getMoment().now();
+		natal.getMoment().setTimeZoneId(Sys.prefGet("place_zone", "GMT"));
+	
+		natal.setHouse(Sys.prefGet("natal_house", 7));
+		natal.load(Sys.prefGet("natal_store", ""));
+
+		aspects = view.getAspectTable();
+		
+		AspectClassic(view);
+		AspectEquator(view);
+		aspects.aspected(natal);
+
+		if (Sys.prefGet("sign_pic", false)) {
+			signs = view.getSignLabels();
+		}
+
+		if (Sys.prefGet("start_asc", true)) {
+			view.setStart(natal.getSpot("Asc"));
+		}
+
+		Charts.setAfterCalcListener(this);
+		Charts.calc();
+		
+		ViewCharts.setTouchListener(this);
+		Sys.asyncTask(FullInfoTask);
+	};
+
+	void setScale(Float scale) {
+		view.setScale(scale);
+		ViewCharts.repaint();
+	}
+	
+	void InfoSigns(on) {
+		signs = on ? view.getSignLabels() : null;
+		Sys.asyncTask(FullInfoTask);
+	}
+
+	void ZodiacDir(cw) {
+		view.setDir(cw);
+		ViewCharts.repaint();
+	}
+	
+	void ShortInfo(String msg) {
+		String res = msg + "<hr>";
+	
+		if (natal.getInfo() != null) {
+			res += "<b>" + natal.getInfo() + "</b><br>";
+		}
+	
+		res += InfoMoment(natal.getMoment());
+	
+		Info.out("<pre>" + res + "</res>");
+	}
+	
+	void Update() {
+		Sys.asyncTask(FullUpdateTask);
+	}
+	
+	boolean onTouchEvent(MotionEvent event) {
+		Integer x = event.getX();
+		Integer y = event.getY();
+		
+		switch(event.getAction()) {
+			case (MotionEvent.ACTION_DOWN):
+				near = ViewCharts.getNear(x, y, 20);
+				Sys.taskRemove(FullInfoTask);
+				pen_x = x;
+				pen_y = y;
+				ShortInfo(i18n.get("Rotate"));
+				break;
+				
+			case (MotionEvent.ACTION_MOVE):
+				pen_step = ViewCharts.getHeight() / 10;
+				delta = pen_x - x;
+
+				if (Math.abs(delta) > pen_step) {
+					natal.getMoment().rotate(delta > 0 ? workspace.rotate_step : -workspace.rotate_step);
+
+					ShortInfo(i18n.get("Rotate"));
+					Sys.taskRemove(CalcTask);
+					Sys.taskDelayed(CalcTask, 100);
+
+					pen_x = x;
+					pen_y = y;
+					near = null;
+				}
+				break;
+			
+			case (MotionEvent.ACTION_UP):
+				if (near != null) {
+					String	info = near.getName() + ":";
+
+					if (near.getAspecting()) {
+						if (near.getAspected()) {
+							Sys.toast(info + i18n.get("Visible"));
+							near.setAspecting(false);
+							near.setAspected(false);
+						} else {
+							Sys.toast(info + i18n.get("Aspected and aspecting"));
+							near.setAspecting(true);
+							near.setAspected(true);
+						}
+					} else {
+						if (near.getAspected()) {
+							Sys.toast(info + i18n.get("Aspecting only"));
+							near.setAspecting(true);
+							near.setAspected(false);
+						} else {
+							Sys.toast(info + i18n.get("Aspected only"));
+							near.setAspecting(false);
+							near.setAspected(true);
+						}
+					}
+					
+					near = null;
+					aspects.calc();
+				}
+			
+				ShortInfo(i18n.get("Rotate..."));
+				Sys.taskRemove(FullInfoTask);
+				Sys.taskDelayed(FullInfoTask, 2000);
+				Sys.prefSet("natal_store", natal.store());	
+				ViewCharts.repaint();
+				break;
+		}
+
+		return true;
+	}
+	
+	return this;
+}
+
+workspace.Register(natalClass());
+Info.out("Natal loaded");

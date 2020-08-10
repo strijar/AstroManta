@@ -1,0 +1,97 @@
+Sys.lib("info/point.bsh");
+
+i18n.add("ru", "Age:",			"Возраст:");
+i18n.add("ru", "years ",		"лет ");
+i18n.add("ru", "days ",			"дней ");
+i18n.add("ru", "Period:",		"Период:");
+i18n.add("ru", "SubPeriod:",	"Подпериод:");
+
+InfoFirdarClass() {
+	String[] lord = new String[] {
+		"Sun",
+		"Venus",
+		"Mercury",
+		"Moon",
+		"Saturn",
+		"Jupiter",
+		"Mars",
+    };
+
+	String Info(ChartNatal natal, ChartNatal moment) {
+		Double jd = moment.getMoment().getJD() - natal.getMoment().getJD();
+	
+		if (jd < 0) return "";
+	
+		Double 	age = jd / 365.2422;
+		Double	days = (age - Math.floor(age)) * 365.2422;
+	
+		res = "<tr><td>" + 
+			i18n.get("Age:") + "</td><td>" +
+			age.intValue() + i18n.get("years ") + days.intValue() + i18n.get("days ") + "</td></tr>";
+
+		void Period(point) {
+			res += "<tr><td>" + i18n.get("Period:") + "</td><td>" + InfoPointPic(point) + "</td></tr>";
+		}
+
+		void SubPeriod(int start, int from, int len) {
+			Period(lord[start]);
+			
+			Double 	part = len / 7.0;
+			Double 	n = Math.floor((age - from) / part) + start;
+			Integer	i = n.intValue() % 7;
+
+			res += "<tr><td>" + i18n.get("SubPeriod:") + "</td><td>" + InfoPointPic(lord[i]) + "</td></tr>";
+		}
+
+		Boolean	day = natal.getSpot("Asc").angle(natal.getSpot("Sun")) < 0;
+
+		while (age > 75.0)
+			age -= 75.0;
+
+		if (age > 73) {
+			Period("SNode");
+		} else if (age > 70) {
+			Period("NNode");
+		} else {
+			if (day) {	
+				if (age <= 10) {
+					SubPeriod(0, 0, 10);
+				} else if (age <= 18) {
+					SubPeriod(1, 10, 8);
+				} else if (age <= 31) {
+					SubPeriod(2, 18, 13);
+				} else if (age <= 40) {
+					SubPeriod(3, 31, 9);
+				} else if (age <= 51) {
+					SubPeriod(4, 40, 11);
+				} else if (age <= 63) {
+					SubPeriod(5, 51, 12);
+				} else {
+					SubPeriod(6, 63, 7);
+				}
+			} else {
+				if (age <= 9) {
+					SubPeriod(3, 0, 9);
+				} else if (age <= 20) {
+					SubPeriod(4, 9, 11);
+				} else if (age <= 32) {
+					SubPeriod(5, 11, 12);
+				} else if (age <= 39) {
+					SubPeriod(6, 32, 7);
+				} else if (age <= 49) {
+					SubPeriod(0, 39, 10);
+				} else if (age <= 57) {
+					SubPeriod(1, 49, 8);
+				} else {
+					SubPeriod(2, 57, 13);
+				}
+			}
+		}
+	
+		return "<p><table>" + res + "</table></p>";
+	}
+	
+	return this;
+}
+
+InfoFirdar = InfoFirdarClass();

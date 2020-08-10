@@ -1,0 +1,100 @@
+Sys.lib("init/tags.bsh");
+
+Sys.i18n("init/settings.json");
+
+settingsClass() {
+	ITEM_DEFAULT_PLACE	= 1;
+	ITEM_ZODIAC_DIR		= 2;
+	ITEM_INFO_SIGN		= 3;
+	ITEM_TAGS			= 4;
+
+	ITEM_SCALE_UP		= 5;
+	ITEM_SCALE_DOWN		= 6;
+	ITEM_SCREENSHOT		= 7;
+
+	void onPrepareOptionsMenu(menu) {
+		current = workspace.current;
+	
+		sub = menu.addMenu(i18n.get("Settings"));
+
+		sub.addItem(ITEM_DEFAULT_PLACE, i18n.get("Default place")).addActionListener(this);
+
+		if (current != null) {
+			sub.addItem(ITEM_ZODIAC_DIR, i18n.get("Zodiac direction CW/CCW")).addActionListener(this);
+			sub.addItem(ITEM_INFO_SIGN, i18n.get("Zodiac simbols in info")).addActionListener(this);
+			sub.addItem(ITEM_TAGS, i18n.get("Hide/Show")).addActionListener(this);
+	
+			current.onPrepareSettingsMenu(sub);
+		
+			sub = menu.addMenu(i18n.get("Screen"));
+
+			sub.addItem(ITEM_SCALE_UP, i18n.get("Scale up")).addActionListener(this);
+			sub.addItem(ITEM_SCALE_DOWN, i18n.get("Scale down")).addActionListener(this);
+			sub.addItem(ITEM_SCREENSHOT, i18n.get("Screenshot")).addActionListener(this);
+		}
+	};
+
+	void onAtlas(name, lat, lon, zone) {
+		Sys.prefSet("place_name", name);
+		Sys.prefSet("place_lat", lat);
+		Sys.prefSet("place_lon", lon);
+		Sys.prefSet("place_zone",zone);
+	};
+
+	public void actionPerformed(e) {
+		AstroMenuItem item = e.getSource();
+
+		switch (item.getItemId())  {
+			case ITEM_ZODIAC_DIR:
+				cw = !Sys.prefGet("cw", false);
+				workspace.current.ZodiacDir(cw);
+				Sys.prefSet("cw", cw);
+				break;
+
+			case ITEM_INFO_SIGN:
+				on = !Sys.prefGet("sign_pic", false);
+				workspace.current.InfoSigns(on);
+				Sys.prefSet("sign_pic", on);
+				break;
+
+			case ITEM_DEFAULT_PLACE:
+				Sys.atlas(this);
+				break;
+
+			case ITEM_TAGS:
+				Tags.Dialog();
+				break;
+
+			case ITEM_SCALE_UP:
+				s = Sys.prefGet("scale", 1.0f) + 0.25f;
+
+				if (s <= 2) {
+					workspace.current.setScale(s);
+					Sys.prefSet("scale", s);
+				}
+				break;
+
+			case ITEM_SCALE_DOWN:
+				s = Sys.prefGet("scale", 1.0f) - 0.25f;
+
+				if (s >= 0.5) {
+					workspace.current.setScale(s);
+					Sys.prefSet("scale", s);
+				}
+				break;
+				
+			case ITEM_SCREENSHOT:
+				String name = Sys.getString(i18n.get("Screenshot"), "screen.png");
+				
+				if (name != null && name.length() > 0) {
+					ViewCharts.screenshot(name);
+					Sys.toast(i18n.get("Screenshot saved"));
+				}
+				break;
+		}
+	};
+	
+	return this;
+}
+
+settings = settingsClass();

@@ -1,0 +1,127 @@
+import bsh.*;
+
+i18n.add("ru", "Workspace",					"Рабочий стол");
+
+i18n.add("ru", "Rotate step",				"Шаг вращения карты");
+i18n.add("ru", "Minute",					"Минута");
+i18n.add("ru", "Hour",						"Час");
+i18n.add("ru", "Day",						"День");
+i18n.add("ru", "Month",						"Месяц");
+i18n.add("ru", "Rotate step: min",			"Шаг вращения: минута");
+i18n.add("ru", "Rotate step: hour",			"Шаг вращения: час");
+i18n.add("ru", "Rotate step: day",			"Шаг вращения: день");
+i18n.add("ru", "Rotate step: month",		"Шаг вращения: месяц");
+
+i18n.add("ru", "Packets",					"Пакеты");
+i18n.add("ru", "Download",					"Загрузить");
+i18n.add("ru", "Restart",					"Рестарт");
+
+workspaceClass() {
+	current = null;
+	items = new ArrayList();
+	cm = CollectionManager.getCollectionManager();
+	rotate_step = Sys.prefGet("rotate_step", 60*60);
+
+	void Register(item) {
+		items.add(item);
+	}
+
+	void Current(item) {
+		current = item;
+	}
+
+	void RotateStep(step, msg) {
+		rotate_step = step;
+		Sys.prefSet("rotate_step", step);
+		Sys.toast(i18n.get(msg));
+	}
+
+	void onString(name) {
+		Sys.download(name);
+	};
+
+	ITEM_STEP_MIN		= 1;
+	ITEM_STEP_HOUR		= 2;
+	ITEM_STEP_DAY		= 3;
+	ITEM_STEP_MONTH		= 4;
+	ITEM_PACK_DOWNLOAD	= 6;
+	ITEM_RESTART		= 7;
+
+	boolean onMenuItemClick(MenuItem item) {
+		switch (item.getItemId()) {
+		
+			case ITEM_STEP_MIN:
+				RotateStep(60, "Rotate step: min");
+				break;
+
+			case ITEM_STEP_HOUR:
+				RotateStep(60*60, "Rotate step: hour");
+				break;
+				
+			case ITEM_STEP_DAY:
+				RotateStep(60*60*24, "Rotate step: day");
+				break;
+				
+			case ITEM_STEP_MONTH:
+				RotateStep(60*60*24*30, "Rotate step: month");
+				break;
+
+			case ITEM_PACK_DOWNLOAD:
+				Sys.getString("URL", "http://strijar.ru/astromanta/", this);
+				break;
+
+			case ITEM_RESTART:
+				Sys.reset();
+				break;
+		}
+		return true;
+	};
+
+	void onPrepareAddMenu(menu) {
+		sub = menu.addSubMenu(i18n.get("Rotate step"));
+
+		sub.add(Menu.NONE, ITEM_STEP_MIN, Menu.NONE, i18n.get("Minute")).setOnMenuItemClickListener(this);
+		sub.add(Menu.NONE, ITEM_STEP_HOUR, Menu.NONE, i18n.get("Hour")).setOnMenuItemClickListener(this);
+		sub.add(Menu.NONE, ITEM_STEP_DAY, Menu.NONE, i18n.get("Day")).setOnMenuItemClickListener(this);
+		sub.add(Menu.NONE, ITEM_STEP_MONTH, Menu.NONE, i18n.get("Month")).setOnMenuItemClickListener(this);		
+	}
+
+	boolean onPrepareOptionsMenu(Menu menu) {
+		menu.clear();
+	
+		sub = menu.addSubMenu(i18n.get("Workspace"));
+	
+		iterator = items.iterator();
+			
+		while (iterator.hasNext()) {
+			item = iterator.next();
+
+			item.onPrepareWorkspaceMenu(sub);
+		}
+
+		if (current != null) {
+			current.onPrepareOptionsMenu(menu);
+			onPrepareAddMenu(menu);
+		}
+
+		settings.onPrepareOptionsMenu(menu);
+
+		sub = menu.addSubMenu(i18n.get("Packets"));
+
+		sub.add(Menu.NONE, ITEM_PACK_DOWNLOAD, Menu.NONE, i18n.get("Download")).setOnMenuItemClickListener(this);
+
+		menu.add(Menu.NONE, ITEM_RESTART, Menu.NONE, i18n.get("Restart")).setOnMenuItemClickListener(this);
+		
+		return true;
+	}
+	
+	Sys.setMenuListener(this);
+
+	return this;
+}
+
+workspace = workspaceClass();
+
+for (file : Sys.dir("workspace").keySet()) {
+    Sys.run("workspace/" + file);
+}

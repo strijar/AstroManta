@@ -1,0 +1,19 @@
+String InfoAspect(aspects) {
+	String str = "<table>";
+	items = aspects.iterator();
+
+	while (items.hasNext()) {
+		item = items.next();
+		info = item.getInfo();
+
+		point1 = item.getSpot1().getName();
+		point2 = item.getSpot2().getName();
+					
+		str += 	"<tr><td>" + InfoPointPic(point1) + 
+			"</td><td>" + info +
+			"</td><td>" + InfoPointPic(point2) +
+			"</td></tr>";
+	}
+
+	return str + "</table>";
+}
